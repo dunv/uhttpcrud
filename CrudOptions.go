@@ -1,7 +1,6 @@
 package uhttpcrud
 
 import (
-	"github.com/dunv/auth"
 	"github.com/dunv/uhttp"
 )
 

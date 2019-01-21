@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/dunv/auth"
-	"github.com/dunv/mongo"
+	"github.com/dunv/uauth"
+	"github.com/dunv/umongo"
 	"github.com/dunv/uhttp"
 )
 

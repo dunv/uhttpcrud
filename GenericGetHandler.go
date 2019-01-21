@@ -7,8 +7,8 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/dunv/auth"
-	"github.com/dunv/mongo"
+	"github.com/dunv/uauth"
+	"github.com/dunv/umongo"
 	"github.com/dunv/uhttp"
 )
 

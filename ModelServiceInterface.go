@@ -1,8 +1,8 @@
 package uhttpcrud
 
 import (
-	"github.com/dunv/auth"
-	"github.com/dunv/mongo"
+	"github.com/dunv/uauth"
+	"github.com/dunv/umongo"
 	"gopkg.in/mgo.v2/bson"
 )
 
