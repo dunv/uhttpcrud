@@ -7,6 +7,7 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
+	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
 	"github.com/dunv/umongo"
 )
@@ -15,7 +16,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if options.GetPermission != nil {
 			// Get User
-			user := r.Context().Value(auth.CtxKeyUser).(auth.User)
+			user := r.Context().Value(uauth.CtxKeyUser).(uauth.User)
 			if !user.CheckPermission(*options.GetPermission) {
 				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission))
 				return

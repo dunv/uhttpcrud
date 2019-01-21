@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
 	"github.com/dunv/umongo"
 )
@@ -13,7 +14,7 @@ import (
 func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Get User
-		user := r.Context().Value(auth.CtxKeyUser).(auth.User)
+		user := r.Context().Value(uauth.CtxKeyUser).(uauth.User)
 		if options.UpdatePermission != nil && !user.CheckPermission(*options.UpdatePermission) {
 			uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.UpdatePermission))
 			return

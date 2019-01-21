@@ -1,21 +1,22 @@
 package uhttpcrud
 
 import (
+	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
 )
 
 // CrudOptions <-
 type CrudOptions struct {
 	IDParameterName  string
-	ListPermission   *auth.Permission
+	ListPermission   *uauth.Permission
 	ListEndpoint     *string
-	GetPermission    *auth.Permission
+	GetPermission    *uauth.Permission
 	GetEndpoint      *string
-	CreatePermission *auth.Permission
+	CreatePermission *uauth.Permission
 	CreateEndpoint   *string
-	UpdatePermission *auth.Permission
+	UpdatePermission *uauth.Permission
 	UpdateEndpoint   *string
-	DeletePermission *auth.Permission
+	DeletePermission *uauth.Permission
 	DeleteEndpoint   *string
 	ModelService     ModelService
 	Model            WithID
