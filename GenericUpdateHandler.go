@@ -6,9 +6,8 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/dunv/uauth"
-	"github.com/dunv/umongo"
 	"github.com/dunv/uhttp"
+	"github.com/dunv/umongo"
 )
 
 func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
@@ -31,7 +30,7 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Get object from db
-		db := r.Context().Value(uhttp.CtxKeyDB).(*mongo.DbSession)
+		db := r.Context().Value(uhttp.CtxKeyDB).(*umongo.DbSession)
 		service := options.ModelService.CopyAndInit(db)
 
 		// Check if all required populated fields are populated (indexes)

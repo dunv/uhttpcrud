@@ -7,9 +7,8 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/dunv/uauth"
-	"github.com/dunv/umongo"
 	"github.com/dunv/uhttp"
+	"github.com/dunv/umongo"
 )
 
 func genericGetHandler(options CrudOptions) http.HandlerFunc {
@@ -27,7 +26,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 		params := r.Context().Value(uhttp.CtxKeyParams).(map[string]interface{})
 
 		// GetDB
-		db := r.Context().Value(uhttp.CtxKeyDB).(*mongo.DbSession)
+		db := r.Context().Value(uhttp.CtxKeyDB).(*umongo.DbSession)
 		service := options.ModelService.CopyAndInit(db)
 
 		// Check if already exists

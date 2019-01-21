@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dunv/uauth"
-	"github.com/dunv/umongo"
 	"github.com/dunv/uhttp"
+	"github.com/dunv/umongo"
 )
 
 func genericListHandler(options CrudOptions) http.HandlerFunc {
@@ -22,7 +21,7 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// GetDB
-		db := r.Context().Value(uhttp.CtxKeyDB).(*mongo.DbSession)
+		db := r.Context().Value(uhttp.CtxKeyDB).(*umongo.DbSession)
 		service := options.ModelService.CopyAndInit(db)
 
 		// Load
