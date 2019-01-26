@@ -13,11 +13,30 @@ import (
 
 func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Get User
-		user := r.Context().Value(uauth.CtxKeyUser).(uauth.User)
-		if options.DeletePermission != nil && !user.CheckPermission(*options.DeletePermission) {
-			uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.DeletePermission))
+		// Sanity check: DeleteOthersPermission can only be set if DeletePermission is set
+		if options.DeletePermission == nil && options.DeleteOthersPermission != nil {
+			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: DeleteOthersPermission can only be set if DeletePermission is set.")
 			return
+		}
+
+		// Check permissions
+		var user uauth.User
+		var limitToUser *uauth.User
+		if options.DeletePermission != nil {
+			user = r.Context().Value(uauth.CtxKeyUser).(uauth.User)
+
+			// Return nothing, if deletePermission is required but the user does not have it
+			if !user.CheckPermission(*options.DeletePermission) {
+				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission))
+				return
+			}
+
+			// Limit results if DeleteOthersPermission is required but the user does not have it
+			if options.DeleteOthersPermission != nil {
+				if !user.CheckPermission(*options.DeleteOthersPermission) {
+					limitToUser = &user
+				}
+			}
 		}
 
 		// Get Params
@@ -28,7 +47,12 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 		service := options.ModelService.CopyAndInit(db)
 
 		// Delete
-		err := service.Delete(bson.ObjectIdHex(params[options.IDParameterName].(string)))
+		var err error
+		if limitToUser != nil {
+			err = service.Delete(bson.ObjectIdHex(params[options.IDParameterName].(string)), limitToUser)
+		} else {
+			err = service.Delete(bson.ObjectIdHex(params[options.IDParameterName].(string)), nil)
+		}
 		if err != nil {
 			uhttp.RenderError(w, r, err)
 			return

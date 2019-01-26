@@ -13,6 +13,12 @@ import (
 
 func genericCreateHandler(options CrudOptions) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Sanity check: CreateOthersPermission can only be set if CreatePermission is set
+		if options.CreatePermission == nil && options.CreateOthersPermission != nil {
+			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: CreateOthersPermission can only be set if CreatePermission is set.")
+			return
+		}
+
 		// Get User
 		user := r.Context().Value(uauth.CtxKeyUser).(uauth.User)
 		if options.CreatePermission != nil && !user.CheckPermission(*options.CreatePermission) {

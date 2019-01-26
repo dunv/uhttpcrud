@@ -14,12 +14,28 @@ import (
 
 func genericGetHandler(options CrudOptions) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Sanity check: GetOthersPermission can only be set if GetPermission is set
+		if options.GetPermission == nil && options.GetOthersPermission != nil {
+			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: GetOthersPermission can only be set if GetPermission is set.")
+			return
+		}
+
+		// Check permissions
+		var limitToUser *uauth.User
 		if options.GetPermission != nil {
-			// Get User
-			user := r.Context().Value(uauth.CtxKeyUser).(uauth.User)
-			if !user.CheckPermission(*options.GetPermission) {
+			tmpUser := r.Context().Value(uauth.CtxKeyUser).(uauth.User)
+
+			// Return nothing, if listPermission is required but the user does not have it
+			if !tmpUser.CheckPermission(*options.GetPermission) {
 				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission))
 				return
+			}
+
+			// Limit results if ListOthersPermission is required but the user does not have it
+			if options.GetOthersPermission != nil {
+				if !tmpUser.CheckPermission(*options.GetOthersPermission) {
+					limitToUser = &tmpUser
+				}
 			}
 		}
 
@@ -30,15 +46,22 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 		db := r.Context().Value(uhttp.CtxKeyDB).(*umongo.DbSession)
 		service := options.ModelService.CopyAndInit(db)
 
-		// Check if already exists
+		// Get
 		objectID := bson.ObjectIdHex(params[options.IDParameterName].(string))
-		objectFromDb, err := service.Get(&objectID)
+		var objFromDb interface{}
+		var err error
+		if limitToUser != nil { // This user obj will be != nil if GetOthersPermission is required, but the user does not have it
+			objFromDb, err = service.Get(&objectID, limitToUser)
+		} else {
+			objFromDb, err = service.Get(&objectID, nil)
+		}
+
 		if err != nil {
 			uhttp.RenderError(w, r, fmt.Errorf("Could not find object with ID: '%s'", params[options.IDParameterName].(string)))
 			return
 		}
 
-		json.NewEncoder(w).Encode(objectFromDb)
+		json.NewEncoder(w).Encode(objFromDb)
 		return
 	})
 }

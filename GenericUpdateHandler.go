@@ -13,11 +13,30 @@ import (
 
 func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Get User
-		user := r.Context().Value(uauth.CtxKeyUser).(uauth.User)
-		if options.UpdatePermission != nil && !user.CheckPermission(*options.UpdatePermission) {
-			uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.UpdatePermission))
+		// Sanity check: UpdateOthersPermission can only be set if UpdatePermission is set
+		if options.UpdatePermission == nil && options.UpdateOthersPermission != nil {
+			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: UpdateOthersPermission can only be set if UpdatePermission is set.")
 			return
+		}
+
+		// Check permissions
+		var user uauth.User
+		var limitToUser *uauth.User
+		if options.UpdatePermission != nil {
+			user = r.Context().Value(uauth.CtxKeyUser).(uauth.User)
+
+			// Return nothing, if updatePermission is required but the user does not have it
+			if !user.CheckPermission(*options.UpdatePermission) {
+				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission))
+				return
+			}
+
+			// Limit results if UpdateOthersPermission is required but the user does not have it
+			if options.UpdateOthersPermission != nil {
+				if !user.CheckPermission(*options.UpdateOthersPermission) {
+					limitToUser = &user
+				}
+			}
 		}
 
 		// Parse body into new "dynamic" object
@@ -42,7 +61,11 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Check if already exists
-		_, err = service.Get(idFromModel)
+		if limitToUser != nil {
+			_, err = service.Get(idFromModel, limitToUser)
+		} else {
+			_, err = service.Get(idFromModel, nil)
+		}
 		if err != nil {
 			uhttp.RenderError(w, r, fmt.Errorf("No object with the id %s exists", modelInterface.(WithID).GetID()))
 			return

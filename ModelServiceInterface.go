@@ -12,9 +12,9 @@ type ModelService interface {
 	GetIndexProperties() string
 	GetByIndexProperties(interface{}) (interface{}, error)
 	CheckNotNullable(interface{}) bool
-	Get(ID *bson.ObjectId) (interface{}, error)
-	List() (interface{}, error)
+	Get(ID *bson.ObjectId, user *uauth.User) (interface{}, error)
+	List(user *uauth.User) (interface{}, error)
 	Create(obj interface{}, user uauth.User) error
 	Update(obj interface{}, user uauth.User) error
-	Delete(id bson.ObjectId) error
+	Delete(id bson.ObjectId, user *uauth.User) error
 }
