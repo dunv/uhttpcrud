@@ -45,7 +45,8 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 		modelInterface := reflectModel.Interface()
 		err := json.NewDecoder(r.Body).Decode(modelInterface)
 		if err != nil {
-			uhttp.RenderError(w, r, fmt.Errorf("Could not decode request body"))
+			// uhttp.RenderError(w, r, fmt.Errorf("Could not decode request body"))
+			uhttp.RenderError(w, r, err)
 			return
 		}
 
