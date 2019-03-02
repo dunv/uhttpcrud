@@ -47,14 +47,17 @@ func genericCreateHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Create (will return an error if already exists)
-		err = service.Create(modelInterface, user)
+		ID, err := service.Create(modelInterface, user)
 		if err != nil {
 			uhttp.RenderError(w, r, err)
 			return
 		}
 
 		// Answer
-		uhttp.RenderMessageWithStatusCode(w, r, 200, "Saved successfully")
+		responseModel := map[string]string{
+			"id": ID.Hex(),
+		}
+		json.NewEncoder(w).Encode(responseModel)
 	})
 }
 

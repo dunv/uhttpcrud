@@ -14,7 +14,7 @@ type ModelService interface {
 	CheckNotNullable(interface{}) bool
 	Get(ID *bson.ObjectId, user *uauth.User) (interface{}, error)
 	List(user *uauth.User) (interface{}, error)
-	Create(obj interface{}, user uauth.User) error
+	Create(obj interface{}, user uauth.User) (*bson.ObjectId, error)
 	Update(obj interface{}, user uauth.User) error
 	Delete(id bson.ObjectId, user *uauth.User) error
 }
