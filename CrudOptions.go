@@ -8,6 +8,7 @@ import (
 // CrudOptions <-
 type CrudOptions struct {
 	IDParameterName string
+	Database        string
 
 	ListEndpoint         *string
 	ListPermission       *uauth.Permission

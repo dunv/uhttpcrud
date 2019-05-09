@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"net/http"
 
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
-	"github.com/dunv/umongo"
 )
 
 func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Sanity check: DeleteOthersPermission can only be set if DeletePermission is set
 		if options.DeletePermission == nil && options.DeleteOthersPermission != nil {
-			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: DeleteOthersPermission can only be set if DeletePermission is set.")
+			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: DeleteOthersPermission can only be set if DeletePermission is set.", nil)
 			return
 		}
 
@@ -27,7 +27,7 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 
 			// Return nothing, if deletePermission is required but the user does not have it
 			if !user.CheckPermission(*options.DeletePermission) {
-				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission))
+				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.DeletePermission), nil)
 				return
 			}
 
@@ -43,23 +43,28 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 		params := r.Context().Value(uhttp.CtxKeyParams).(map[string]interface{})
 
 		// GetDB
-		db := r.Context().Value(uhttp.CtxKeyDB).(*umongo.DbSession)
-		service := options.ModelService.CopyAndInit(db)
+		db := r.Context().Value(dbContextKey).(*mongo.Client)
+		service := options.ModelService.CopyAndInit(db, options.Database)
+
+		objectID, err := primitive.ObjectIDFromHex(params[options.IDParameterName].(string))
+		if err != nil {
+			uhttp.RenderError(w, r, fmt.Errorf("Could not parse ID: '%s'", params[options.IDParameterName].(string)), nil)
+			return
+		}
 
 		// Delete
-		var err error
 		if limitToUser != nil {
-			err = service.Delete(bson.ObjectIdHex(params[options.IDParameterName].(string)), limitToUser)
+			err = service.Delete(objectID, limitToUser)
 		} else {
-			err = service.Delete(bson.ObjectIdHex(params[options.IDParameterName].(string)), nil)
+			err = service.Delete(objectID, nil)
 		}
 		if err != nil {
-			uhttp.RenderError(w, r, err)
+			uhttp.RenderError(w, r, err, nil)
 			return
 		}
 
 		// Answer
-		uhttp.RenderMessageWithStatusCode(w, r, 200, "Deleted successfully")
+		uhttp.RenderMessageWithStatusCode(w, r, 200, "Deleted successfully", nil)
 	})
 }
 
@@ -68,7 +73,7 @@ func GenericDeleteHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		Methods:      []string{"OPTIONS", "DELETE"},
 		Handler:      genericDeleteHandler(options),
-		DbRequired:   true,
+		DbRequired:   []uhttp.ContextKey{dbContextKey},
 		AuthRequired: true, // We need a user in order to delete an object
 		RequiredParams: uhttp.Params{ParamMap: map[string]uhttp.ParamRequirement{
 			options.IDParameterName: uhttp.ParamRequirement{AllValues: true},

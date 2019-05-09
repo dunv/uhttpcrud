@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"net/http"
 
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
-	"github.com/dunv/umongo"
 )
 
 func genericGetHandler(options CrudOptions) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Sanity check: GetOthersPermission can only be set if GetPermission is set
 		if options.GetPermission == nil && options.GetOthersPermission != nil {
-			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: GetOthersPermission can only be set if GetPermission is set.")
+			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: GetOthersPermission can only be set if GetPermission is set.", nil)
 			return
 		}
 
@@ -27,7 +27,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 
 			// Return nothing, if listPermission is required but the user does not have it
 			if !tmpUser.CheckPermission(*options.GetPermission) {
-				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission))
+				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.GetPermission), nil)
 				return
 			}
 
@@ -43,13 +43,16 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 		params := r.Context().Value(uhttp.CtxKeyParams).(map[string]interface{})
 
 		// GetDB
-		db := r.Context().Value(uhttp.CtxKeyDB).(*umongo.DbSession)
-		service := options.ModelService.CopyAndInit(db)
+		db := r.Context().Value(dbContextKey).(*mongo.Client)
+		service := options.ModelService.CopyAndInit(db, options.Database)
 
 		// Get
-		objectID := bson.ObjectIdHex(params[options.IDParameterName].(string))
+		objectID, err := primitive.ObjectIDFromHex(params[options.IDParameterName].(string))
+		if err != nil {
+			uhttp.RenderError(w, r, fmt.Errorf("Could not parse ID: '%s'", params[options.IDParameterName].(string)), nil)
+			return
+		}
 		var objFromDb interface{}
-		var err error
 		if limitToUser != nil { // This user obj will be != nil if GetOthersPermission is required, but the user does not have it
 			objFromDb, err = service.Get(&objectID, limitToUser)
 		} else {
@@ -57,7 +60,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		if err != nil {
-			uhttp.RenderError(w, r, fmt.Errorf("Could not find object with ID: '%s'", params[options.IDParameterName].(string)))
+			uhttp.RenderError(w, r, fmt.Errorf("Could not find object with ID: '%s'", params[options.IDParameterName].(string)), nil)
 			return
 		}
 
@@ -71,7 +74,7 @@ func GenericGetHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		Methods:      []string{"GET"},
 		Handler:      genericGetHandler(options),
-		DbRequired:   true,
+		DbRequired:   []uhttp.ContextKey{dbContextKey},
 		AuthRequired: options.GetPermission != nil,
 		RequiredParams: uhttp.Params{ParamMap: map[string]uhttp.ParamRequirement{
 			options.IDParameterName: uhttp.ParamRequirement{AllValues: true},

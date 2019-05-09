@@ -1,10 +1,8 @@
 package uhttpcrud
 
-import (
-	"gopkg.in/mgo.v2/bson"
-)
+import "go.mongodb.org/mongo-driver/bson/primitive"
 
 // WithID <-
 type WithID interface {
-	GetID() *bson.ObjectId
+	GetID() *primitive.ObjectID
 }

@@ -7,7 +7,7 @@ import (
 
 	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
-	"github.com/dunv/umongo"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func genericListHandler(options CrudOptions) http.HandlerFunc {
@@ -15,7 +15,7 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 
 		// Sanity check: ListOthersPermission can only be set if ListPermission is set
 		if options.ListPermission == nil && options.ListOthersPermission != nil {
-			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: ListOthersPermission can only be set if ListPermission is set.")
+			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: ListOthersPermission can only be set if ListPermission is set.", nil)
 			return
 		}
 
@@ -26,7 +26,7 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 
 			// Return nothing, if listPermission is required but the user does not have it
 			if !tmpUser.CheckPermission(*options.ListPermission) {
-				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission))
+				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission), nil)
 				return
 			}
 
@@ -39,8 +39,8 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// GetDB
-		db := r.Context().Value(uhttp.CtxKeyDB).(*umongo.DbSession)
-		service := options.ModelService.CopyAndInit(db)
+		db := r.Context().Value(dbContextKey).(*mongo.Client)
+		service := options.ModelService.CopyAndInit(db, options.Database)
 
 		// Load
 		var objsFromDb interface{}
@@ -51,7 +51,7 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 			objsFromDb, err = service.List(nil)
 		}
 		if err != nil {
-			uhttp.RenderError(w, r, err)
+			uhttp.RenderError(w, r, err, nil)
 			return
 		}
 
@@ -66,7 +66,7 @@ func GenericListHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		Methods:      []string{"GET"},
 		Handler:      genericListHandler(options),
-		DbRequired:   true,
+		DbRequired:   []uhttp.ContextKey{dbContextKey},
 		AuthRequired: options.ListPermission != nil,
 	}
 }
