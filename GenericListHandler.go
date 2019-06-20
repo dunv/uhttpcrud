@@ -64,8 +64,7 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 // GenericListHandler <-
 func GenericListHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
-		Methods:      []string{"GET"},
-		Handler:      genericListHandler(options),
+		GetHandler:   genericListHandler(options),
 		DbRequired:   []uhttp.ContextKey{dbContextKey},
 		AuthRequired: options.ListPermission != nil,
 	}

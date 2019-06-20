@@ -87,8 +87,7 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 // GenericUpdateHandler <-
 func GenericUpdateHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
-		Methods:      []string{"OPTIONS", "POST"},
-		Handler:      genericUpdateHandler(options),
+		PostHandler:  genericUpdateHandler(options),
 		DbRequired:   []uhttp.ContextKey{dbContextKey},
 		AuthRequired: true, // We need a user in order to update an object
 	}

@@ -71,10 +71,9 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 // GenericDeleteHandler <-
 func GenericDeleteHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
-		Methods:      []string{"OPTIONS", "DELETE"},
-		Handler:      genericDeleteHandler(options),
-		DbRequired:   []uhttp.ContextKey{dbContextKey},
-		AuthRequired: true, // We need a user in order to delete an object
+		DeleteHandler: genericDeleteHandler(options),
+		DbRequired:    []uhttp.ContextKey{dbContextKey},
+		AuthRequired:  true, // We need a user in order to delete an object
 		RequiredParams: uhttp.Params{ParamMap: map[string]uhttp.ParamRequirement{
 			options.IDParameterName: uhttp.ParamRequirement{AllValues: true},
 		}},

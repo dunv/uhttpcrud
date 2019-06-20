@@ -72,8 +72,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 // GenericGetHandler <-
 func GenericGetHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
-		Methods:      []string{"GET"},
-		Handler:      genericGetHandler(options),
+		GetHandler:   genericGetHandler(options),
 		DbRequired:   []uhttp.ContextKey{dbContextKey},
 		AuthRequired: options.GetPermission != nil,
 		RequiredParams: uhttp.Params{ParamMap: map[string]uhttp.ParamRequirement{
