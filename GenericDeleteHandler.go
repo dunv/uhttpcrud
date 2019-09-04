@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/dunv/uauth"
@@ -46,11 +45,8 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 		db := r.Context().Value(dbContextKey).(*mongo.Client)
 		service := options.ModelService.CopyAndInit(db, options.Database)
 
-		objectID, err := primitive.ObjectIDFromHex(params[options.IDParameterName].(string))
-		if err != nil {
-			uhttp.RenderError(w, r, fmt.Errorf("Could not parse ID: '%s'", params[options.IDParameterName].(string)))
-			return
-		}
+		objectID := params[options.IDParameterName]
+		var err error
 
 		// Delete
 		if limitToUser != nil {
@@ -68,10 +64,10 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 	})
 }
 
-// GenericDeleteHandler <-
 func GenericDeleteHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		DeleteHandler: genericDeleteHandler(options),
+		PreProcess:    options.DeletePreprocess,
 		DbRequired:    []uhttp.ContextKey{dbContextKey},
 		AuthRequired:  true, // We need a user in order to delete an object
 		RequiredParams: uhttp.Params{ParamMap: map[string]uhttp.ParamRequirement{

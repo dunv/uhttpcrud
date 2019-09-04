@@ -56,15 +56,15 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Render Response
-		json.NewEncoder(w).Encode(objsFromDb)
+		uhttp.CheckAndLogError(json.NewEncoder(w).Encode(objsFromDb))
 		return
 	})
 }
 
-// GenericListHandler <-
 func GenericListHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		GetHandler:   genericListHandler(options),
+		PreProcess:   options.ListPreprocess,
 		DbRequired:   []uhttp.ContextKey{dbContextKey},
 		AuthRequired: options.ListPermission != nil,
 	}

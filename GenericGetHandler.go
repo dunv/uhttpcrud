@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/dunv/uauth"
@@ -47,16 +46,13 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 		service := options.ModelService.CopyAndInit(db, options.Database)
 
 		// Get
-		objectID, err := primitive.ObjectIDFromHex(params[options.IDParameterName].(string))
-		if err != nil {
-			uhttp.RenderError(w, r, fmt.Errorf("Could not parse ID: '%s'", params[options.IDParameterName].(string)))
-			return
-		}
+		objectID := params[options.IDParameterName]
 		var objFromDb interface{}
+		var err error
 		if limitToUser != nil { // This user obj will be != nil if GetOthersPermission is required, but the user does not have it
-			objFromDb, err = service.Get(&objectID, limitToUser)
+			objFromDb, err = service.Get(objectID, limitToUser)
 		} else {
-			objFromDb, err = service.Get(&objectID, nil)
+			objFromDb, err = service.Get(objectID, nil)
 		}
 
 		if err != nil {
@@ -64,15 +60,15 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 			return
 		}
 
-		json.NewEncoder(w).Encode(objFromDb)
+		uhttp.CheckAndLogError(json.NewEncoder(w).Encode(objFromDb))
 		return
 	})
 }
 
-// GenericGetHandler <-
 func GenericGetHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		GetHandler:   genericGetHandler(options),
+		PreProcess:   options.GetPreprocess,
 		DbRequired:   []uhttp.ContextKey{dbContextKey},
 		AuthRequired: options.GetPermission != nil,
 		RequiredParams: uhttp.Params{ParamMap: map[string]uhttp.ParamRequirement{

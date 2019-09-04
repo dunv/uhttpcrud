@@ -2,7 +2,6 @@ package uhttpcrud
 
 import (
 	"github.com/dunv/uauth"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -12,9 +11,9 @@ type ModelService interface {
 	GetIndexProperties() string
 	GetByIndexProperties(interface{}) (interface{}, error)
 	CheckNotNullable(interface{}) bool
-	Get(ID *primitive.ObjectID, user *uauth.User) (interface{}, error)
+	Get(ID interface{}, user *uauth.User) (interface{}, error)
 	List(user *uauth.User) (interface{}, error)
-	Create(obj interface{}, user uauth.User) (*primitive.ObjectID, error)
+	Create(obj interface{}, user uauth.User) (interface{}, error)
 	Update(obj interface{}, user uauth.User) error
-	Delete(id primitive.ObjectID, user *uauth.User) error
+	Delete(id interface{}, user *uauth.User) error
 }

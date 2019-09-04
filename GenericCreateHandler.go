@@ -54,17 +54,17 @@ func genericCreateHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Answer
-		responseModel := map[string]string{
-			"id": ID.Hex(),
+		responseModel := map[string]interface{}{
+			"id": ID,
 		}
 		uhttp.CheckAndLogError(json.NewEncoder(w).Encode(responseModel))
 	})
 }
 
-// GenericCreateHandler <-
 func GenericCreateHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		PostHandler:  genericCreateHandler(options),
+		PreProcess:   options.CreatePreprocess,
 		DbRequired:   []uhttp.ContextKey{dbContextKey},
 		AuthRequired: true, // We need a user in order to create an object
 	}

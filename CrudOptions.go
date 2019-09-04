@@ -1,32 +1,38 @@
 package uhttpcrud
 
 import (
+	"context"
+
 	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
 )
 
-// CrudOptions <-
 type CrudOptions struct {
 	IDParameterName string
 	Database        string
 
 	ListEndpoint         *string
+	ListPreprocess       func(context.Context) error
 	ListPermission       *uauth.Permission
 	ListOthersPermission *uauth.Permission
 
 	GetEndpoint         *string
+	GetPreprocess       func(context.Context) error
 	GetPermission       *uauth.Permission
 	GetOthersPermission *uauth.Permission
 
 	CreateEndpoint         *string
+	CreatePreprocess       func(context.Context) error
 	CreatePermission       *uauth.Permission
 	CreateOthersPermission *uauth.Permission
 
 	UpdateEndpoint         *string
+	UpdatePreprocess       func(context.Context) error
 	UpdatePermission       *uauth.Permission
 	UpdateOthersPermission *uauth.Permission
 
 	DeleteEndpoint         *string
+	DeletePreprocess       func(context.Context) error
 	DeletePermission       *uauth.Permission
 	DeleteOthersPermission *uauth.Permission
 
@@ -34,7 +40,6 @@ type CrudOptions struct {
 	Model        WithID
 }
 
-// CreateEndpoints <-
 func (o CrudOptions) CreateEndpoints() {
 	if o.GetEndpoint != nil {
 		uhttp.Handle(*o.GetEndpoint, GenericGetHandler(o))
