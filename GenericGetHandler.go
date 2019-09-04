@@ -16,7 +16,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Sanity check: GetOthersPermission can only be set if GetPermission is set
 		if options.GetPermission == nil && options.GetOthersPermission != nil {
-			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: GetOthersPermission can only be set if GetPermission is set.", nil)
+			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: GetOthersPermission can only be set if GetPermission is set.")
 			return
 		}
 
@@ -27,7 +27,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 
 			// Return nothing, if listPermission is required but the user does not have it
 			if !tmpUser.CheckPermission(*options.GetPermission) {
-				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.GetPermission), nil)
+				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.GetPermission))
 				return
 			}
 
@@ -49,7 +49,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 		// Get
 		objectID, err := primitive.ObjectIDFromHex(params[options.IDParameterName].(string))
 		if err != nil {
-			uhttp.RenderError(w, r, fmt.Errorf("Could not parse ID: '%s'", params[options.IDParameterName].(string)), nil)
+			uhttp.RenderError(w, r, fmt.Errorf("Could not parse ID: '%s'", params[options.IDParameterName].(string)))
 			return
 		}
 		var objFromDb interface{}
@@ -60,7 +60,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		if err != nil {
-			uhttp.RenderError(w, r, fmt.Errorf("Could not find object with ID: '%s'", params[options.IDParameterName].(string)), nil)
+			uhttp.RenderError(w, r, fmt.Errorf("Could not find object with ID: '%s'", params[options.IDParameterName].(string)))
 			return
 		}
 

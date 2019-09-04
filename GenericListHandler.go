@@ -15,7 +15,7 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 
 		// Sanity check: ListOthersPermission can only be set if ListPermission is set
 		if options.ListPermission == nil && options.ListOthersPermission != nil {
-			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: ListOthersPermission can only be set if ListPermission is set.", nil)
+			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: ListOthersPermission can only be set if ListPermission is set.")
 			return
 		}
 
@@ -26,7 +26,7 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 
 			// Return nothing, if listPermission is required but the user does not have it
 			if !tmpUser.CheckPermission(*options.ListPermission) {
-				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission), nil)
+				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission))
 				return
 			}
 
@@ -51,7 +51,7 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 			objsFromDb, err = service.List(nil)
 		}
 		if err != nil {
-			uhttp.RenderError(w, r, err, nil)
+			uhttp.RenderError(w, r, err)
 			return
 		}
 

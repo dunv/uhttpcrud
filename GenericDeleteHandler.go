@@ -15,7 +15,7 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Sanity check: DeleteOthersPermission can only be set if DeletePermission is set
 		if options.DeletePermission == nil && options.DeleteOthersPermission != nil {
-			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: DeleteOthersPermission can only be set if DeletePermission is set.", nil)
+			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: DeleteOthersPermission can only be set if DeletePermission is set.")
 			return
 		}
 
@@ -27,7 +27,7 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 
 			// Return nothing, if deletePermission is required but the user does not have it
 			if !user.CheckPermission(*options.DeletePermission) {
-				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.DeletePermission), nil)
+				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.DeletePermission))
 				return
 			}
 
@@ -48,7 +48,7 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 
 		objectID, err := primitive.ObjectIDFromHex(params[options.IDParameterName].(string))
 		if err != nil {
-			uhttp.RenderError(w, r, fmt.Errorf("Could not parse ID: '%s'", params[options.IDParameterName].(string)), nil)
+			uhttp.RenderError(w, r, fmt.Errorf("Could not parse ID: '%s'", params[options.IDParameterName].(string)))
 			return
 		}
 
@@ -59,12 +59,12 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 			err = service.Delete(objectID, nil)
 		}
 		if err != nil {
-			uhttp.RenderError(w, r, err, nil)
+			uhttp.RenderError(w, r, err)
 			return
 		}
 
 		// Answer
-		uhttp.RenderMessageWithStatusCode(w, r, 200, "Deleted successfully", nil)
+		uhttp.RenderMessageWithStatusCode(w, r, 200, "Deleted successfully")
 	})
 }
 

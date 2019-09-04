@@ -15,7 +15,7 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Sanity check: UpdateOthersPermission can only be set if UpdatePermission is set
 		if options.UpdatePermission == nil && options.UpdateOthersPermission != nil {
-			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: UpdateOthersPermission can only be set if UpdatePermission is set.", nil)
+			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: UpdateOthersPermission can only be set if UpdatePermission is set.")
 			return
 		}
 
@@ -27,7 +27,7 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 
 			// Return nothing, if updatePermission is required but the user does not have it
 			if !user.CheckPermission(*options.UpdatePermission) {
-				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.UpdatePermission), nil)
+				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.UpdatePermission))
 				return
 			}
 
@@ -46,7 +46,7 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 		err := json.NewDecoder(r.Body).Decode(modelInterface)
 		if err != nil {
 			// uhttp.RenderError(w, r, fmt.Errorf("Could not decode request body"))
-			uhttp.RenderError(w, r, err, nil)
+			uhttp.RenderError(w, r, err)
 			return
 		}
 
@@ -57,7 +57,7 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 		// Check if all required populated fields are populated (indexes)
 		idFromModel := modelInterface.(WithID).GetID()
 		if idFromModel == nil || !service.CheckNotNullable(modelInterface) {
-			uhttp.RenderError(w, r, fmt.Errorf("Non-nullable properties are null or no ID present"), nil)
+			uhttp.RenderError(w, r, fmt.Errorf("Non-nullable properties are null or no ID present"))
 			return
 		}
 
@@ -68,19 +68,19 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 			_, err = service.Get(idFromModel, nil)
 		}
 		if err != nil {
-			uhttp.RenderError(w, r, fmt.Errorf("No object with the id %s exists", modelInterface.(WithID).GetID()), nil)
+			uhttp.RenderError(w, r, fmt.Errorf("No object with the id %s exists", modelInterface.(WithID).GetID()))
 			return
 		}
 
 		// Actual update
 		err = service.Update(modelInterface, user)
 		if err != nil {
-			uhttp.RenderError(w, r, err, nil)
+			uhttp.RenderError(w, r, err)
 			return
 		}
 
 		// Answer
-		uhttp.RenderMessageWithStatusCode(w, r, 200, "Updated successfully", nil)
+		uhttp.RenderMessageWithStatusCode(w, r, 200, "Updated successfully")
 	})
 }
 
