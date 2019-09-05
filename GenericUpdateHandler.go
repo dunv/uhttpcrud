@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
 
 	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
@@ -39,16 +38,7 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 			}
 		}
 
-		// Parse body into new "dynamic" object
-		model := options.Model
-		reflectModel := reflect.New(reflect.TypeOf(model))
-		modelInterface := reflectModel.Interface()
-		err := json.NewDecoder(r.Body).Decode(modelInterface)
-		if err != nil {
-			// uhttp.RenderError(w, r, fmt.Errorf("Could not decode request body"))
-			uhttp.RenderError(w, r, err)
-			return
-		}
+		modelInterface := r.Context().Value(uhttp.CtxKeyPostModel).(WithID)
 
 		// Get object from db
 		db := r.Context().Value(dbContextKey).(*mongo.Client)
@@ -62,6 +52,7 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Check if already exists
+		var err error
 		if limitToUser != nil {
 			_, err = service.Get(idFromModel, limitToUser)
 		} else {
