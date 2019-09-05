@@ -61,6 +61,7 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 	})
 }
 
+// Returns an instance of an list-handler for the configured options
 func GenericListHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		GetHandler:   genericListHandler(options),

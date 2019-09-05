@@ -41,29 +41,28 @@ func genericCreateHandler(options CrudOptions) http.HandlerFunc {
 		service := options.ModelService.CopyAndInit(db, options.Database)
 
 		// Check if all required populated fields are populated (indexes)
-		if !service.CheckNotNullable(modelInterface) {
+		if !service.Validate(modelInterface) {
 			uhttp.RenderError(w, r, fmt.Errorf("Non-nullable properties are null"))
 			return
 		}
 
 		// Create (will return an error if already exists)
-		ID, err := service.Create(modelInterface, user)
+		createdDocument, err := service.Create(modelInterface, &user)
 		if err != nil {
 			uhttp.RenderError(w, r, err)
 			return
 		}
 
 		// Answer
-		responseModel := map[string]interface{}{
-			"id": ID,
-		}
-		uhttp.CheckAndLogError(json.NewEncoder(w).Encode(responseModel))
+		uhttp.CheckAndLogError(json.NewEncoder(w).Encode(createdDocument))
 	})
 }
 
+// Returns an instance of an update-handler for the configured options
 func GenericCreateHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		PostHandler:  genericCreateHandler(options),
+		PostModel:    options.Model,
 		PreProcess:   options.CreatePreprocess,
 		DbRequired:   []uhttp.ContextKey{dbContextKey},
 		AuthRequired: true, // We need a user in order to create an object

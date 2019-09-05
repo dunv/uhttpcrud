@@ -56,7 +56,7 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 
 		// Check if all required populated fields are populated (indexes)
 		idFromModel := modelInterface.(WithID).GetID()
-		if idFromModel == nil || !service.CheckNotNullable(modelInterface) {
+		if idFromModel == nil || !service.Validate(modelInterface) {
 			uhttp.RenderError(w, r, fmt.Errorf("Non-nullable properties are null or no ID present"))
 			return
 		}
@@ -73,21 +73,22 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Actual update
-		err = service.Update(modelInterface, user)
+		updatedDocument, err := service.Update(modelInterface, &user)
 		if err != nil {
 			uhttp.RenderError(w, r, err)
 			return
 		}
 
 		// Answer
-		uhttp.RenderMessageWithStatusCode(w, r, 200, "Updated successfully")
+		uhttp.CheckAndLogError(json.NewEncoder(w).Encode(updatedDocument))
 	})
 }
 
-// GenericUpdateHandler <-
 func GenericUpdateHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		PostHandler:  genericUpdateHandler(options),
+		PostModel:    options.Model,
+		PreProcess:   options.UpdatePreprocess,
 		DbRequired:   []uhttp.ContextKey{dbContextKey},
 		AuthRequired: true, // We need a user in order to update an object
 	}

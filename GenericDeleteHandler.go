@@ -64,6 +64,7 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 	})
 }
 
+// Returns an instance of an delete-handler for the configured options
 func GenericDeleteHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		DeleteHandler: genericDeleteHandler(options),

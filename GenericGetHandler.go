@@ -65,6 +65,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 	})
 }
 
+// Returns an instance of an get-handler for the configured options
 func GenericGetHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		GetHandler:   genericGetHandler(options),
