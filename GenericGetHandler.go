@@ -21,8 +21,9 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 
 		// Check permissions
 		var limitToUser *uauth.User
+		var tmpUser uauth.User
 		if options.GetPermission != nil {
-			tmpUser := r.Context().Value(uauth.CtxKeyUser).(uauth.User)
+			tmpUser = r.Context().Value(uauth.CtxKeyUser).(uauth.User)
 
 			// Return nothing, if listPermission is required but the user does not have it
 			if !tmpUser.CheckPermission(*options.GetPermission) {
@@ -48,12 +49,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 		// Get
 		objectID := params[options.IDParameterName]
 		var objFromDb interface{}
-		var err error
-		if limitToUser != nil { // This user obj will be != nil if GetOthersPermission is required, but the user does not have it
-			objFromDb, err = service.Get(objectID, limitToUser)
-		} else {
-			objFromDb, err = service.Get(objectID, nil)
-		}
+		objFromDb, err := service.Get(objectID, &tmpUser, limitToUser != nil)
 
 		if err != nil {
 			uhttp.RenderError(w, r, fmt.Errorf("Could not find object with ID: '%s'", params[options.IDParameterName].(string)))

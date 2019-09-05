@@ -46,14 +46,9 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 		service := options.ModelService.CopyAndInit(db, options.Database)
 
 		objectID := params[options.IDParameterName]
-		var err error
 
 		// Delete
-		if limitToUser != nil {
-			err = service.Delete(objectID, limitToUser)
-		} else {
-			err = service.Delete(objectID, nil)
-		}
+		err := service.Delete(objectID, &user, limitToUser != nil)
 		if err != nil {
 			uhttp.RenderError(w, r, err)
 			return

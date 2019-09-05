@@ -52,19 +52,14 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Check if already exists
-		var err error
-		if limitToUser != nil {
-			_, err = service.Get(idFromModel, limitToUser)
-		} else {
-			_, err = service.Get(idFromModel, nil)
-		}
+		_, err := service.Get(idFromModel, &user, limitToUser != nil)
 		if err != nil {
 			uhttp.RenderError(w, r, fmt.Errorf("No object with the id %s exists", modelInterface.(WithID).GetID()))
 			return
 		}
 
 		// Actual update
-		updatedDocument, err := service.Update(modelInterface, &user)
+		updatedDocument, err := service.Update(modelInterface, &user, limitToUser != nil)
 		if err != nil {
 			uhttp.RenderError(w, r, err)
 			return
