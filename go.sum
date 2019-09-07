@@ -23,6 +23,12 @@ github.com/dunv/uhttp v1.0.18 h1:ykdOyhW5LISCZXdC+iou5ssRkKiAyiY9+G4aV24Sr+k=
 github.com/dunv/uhttp v1.0.18/go.mod h1:vi7NWNEIIApH8PUTL3Hn1TIuOaDPmb4b6aMUpuQIMWI=
 github.com/dunv/uhttp v1.0.19 h1:xotwAY0oZ67gtuCG2vJHothWLcpGRnj+Uag1+Au8BuI=
 github.com/dunv/uhttp v1.0.19/go.mod h1:vi7NWNEIIApH8PUTL3Hn1TIuOaDPmb4b6aMUpuQIMWI=
+github.com/dunv/uhttp v1.0.20 h1:qHNV5WVsZsnAcPdfEgM8NCT8b2iFTA0h+xWllTKeMAY=
+github.com/dunv/uhttp v1.0.20/go.mod h1:/yoh8ScPoJ00ilmmox7D4Ouovmju6G+Px7xpO8mj4MU=
+github.com/dunv/ulog v0.0.3 h1:hle649ef7to+MC7ackBW5J11ogONOlnrdeDpBeUHirs=
+github.com/dunv/ulog v0.0.3/go.mod h1:9WOgavOm7uFClydmGepJTrNZbtgQKSUNn5FM9Dvvy9Y=
+github.com/dunv/ulog v0.0.4 h1:GT4DOK2LBP1RvxxU1hMDZrpEzgNSwfC4ptKW3frF+LU=
+github.com/dunv/ulog v0.0.4/go.mod h1:9WOgavOm7uFClydmGepJTrNZbtgQKSUNn5FM9Dvvy9Y=
 github.com/dunv/umongo v1.0.8/go.mod h1:GTE/PEH/OJF+EHzgrjwFI3OUSoyu0tJxHbBCg29pNng=
 github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
 github.com/go-logfmt/logfmt v0.3.0/go.mod h1:Qt1PoO58o5twSAckw1HlFXLmHsOX5/0LbT9GBnD5lWE=
@@ -63,6 +69,7 @@ github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0Q=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
+github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c h1:u40Z8hqBAAQyv+vATcGgV0YCnDjqSL7/q/JyPhhJSPk=
 github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c/go.mod h1:lB8K/P019DLNhemzwFU4jHLhdvlE6uDZjXFejJXr49I=
@@ -94,3 +101,4 @@ golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGm
 gopkg.in/alecthomas/kingpin.v2 v2.2.6/go.mod h1:FMv+mEhP44yOT+4EoQTLFTRgOQ1FBLkstjWtayDeSgw=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v2 v2.2.1/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
+gopkg.in/yaml.v2 v2.2.2/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=

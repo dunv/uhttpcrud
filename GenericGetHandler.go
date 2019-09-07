@@ -9,6 +9,7 @@ import (
 
 	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
+	"github.com/dunv/ulog"
 )
 
 func genericGetHandler(options CrudOptions) http.HandlerFunc {
@@ -56,7 +57,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 			return
 		}
 
-		uhttp.CheckAndLogError(json.NewEncoder(w).Encode(objFromDb))
+		ulog.LogIfError(json.NewEncoder(w).Encode(objFromDb))
 		return
 	})
 }

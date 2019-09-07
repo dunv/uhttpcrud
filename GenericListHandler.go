@@ -7,6 +7,7 @@ import (
 
 	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
+	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -51,7 +52,7 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Render Response
-		uhttp.CheckAndLogError(json.NewEncoder(w).Encode(objsFromDb))
+		ulog.LogIfError(json.NewEncoder(w).Encode(objsFromDb))
 		return
 	})
 }
