@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dunv/uauth"
+	uauthConfig "github.com/dunv/uauth/config"
+	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
 	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,7 +21,7 @@ func genericCreateHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Get User
-		user := r.Context().Value(uauth.CtxKeyUser).(uauth.User)
+		user := r.Context().Value(uauthConfig.CtxKeyUser).(uauthModels.User)
 		if options.CreatePermission != nil && !user.CheckPermission(*options.CreatePermission) {
 			uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.CreatePermission))
 			return

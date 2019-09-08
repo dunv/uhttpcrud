@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dunv/uauth"
+	uauthConfig "github.com/dunv/uauth/config"
+	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
 	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,10 +21,10 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Check permissions
-		var user uauth.User
-		var limitToUser *uauth.User
+		var user uauthModels.User
+		var limitToUser *uauthModels.User
 		if options.UpdatePermission != nil {
-			user = r.Context().Value(uauth.CtxKeyUser).(uauth.User)
+			user = r.Context().Value(uauthConfig.CtxKeyUser).(uauthModels.User)
 
 			// Return nothing, if updatePermission is required but the user does not have it
 			if !user.CheckPermission(*options.UpdatePermission) {

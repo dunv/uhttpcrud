@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dunv/uauth"
+	uauthConfig "github.com/dunv/uauth/config"
+	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
 	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,10 +22,10 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Check permissions
-		var limitToUser *uauth.User
-		var tmpUser uauth.User
+		var limitToUser *uauthModels.User
+		var tmpUser uauthModels.User
 		if options.ListPermission != nil {
-			tmpUser = r.Context().Value(uauth.CtxKeyUser).(uauth.User)
+			tmpUser = r.Context().Value(uauthConfig.CtxKeyUser).(uauthModels.User)
 
 			// Return nothing, if listPermission is required but the user does not have it
 			if !tmpUser.CheckPermission(*options.ListPermission) {

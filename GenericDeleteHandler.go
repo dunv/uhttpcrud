@@ -6,7 +6,8 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"github.com/dunv/uauth"
+	uauthConfig "github.com/dunv/uauth/config"
+	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
 )
 
@@ -19,10 +20,10 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Check permissions
-		var user uauth.User
-		var limitToUser *uauth.User
+		var user uauthModels.User
+		var limitToUser *uauthModels.User
 		if options.DeletePermission != nil {
-			user = r.Context().Value(uauth.CtxKeyUser).(uauth.User)
+			user = r.Context().Value(uauthConfig.CtxKeyUser).(uauthModels.User)
 
 			// Return nothing, if deletePermission is required but the user does not have it
 			if !user.CheckPermission(*options.DeletePermission) {

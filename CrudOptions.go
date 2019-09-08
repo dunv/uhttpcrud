@@ -3,7 +3,7 @@ package uhttpcrud
 import (
 	"context"
 
-	"github.com/dunv/uauth"
+	uauthPermissions "github.com/dunv/uauth/permissions"
 	"github.com/dunv/uhttp"
 )
 
@@ -19,36 +19,36 @@ type CrudOptions struct {
 	// If == nil there will be no list-enpoint
 	ListEndpoint         *string
 	ListPreprocess       func(context.Context) error
-	ListPermission       *uauth.Permission
-	ListOthersPermission *uauth.Permission
+	ListPermission       *uauthPermissions.Permission
+	ListOthersPermission *uauthPermissions.Permission
 
 	// GetEndpoint is the http-endpoint-name for get queries
 	// If == nil there will be no get-enpoint
 	GetEndpoint         *string
 	GetPreprocess       func(context.Context) error
-	GetPermission       *uauth.Permission
-	GetOthersPermission *uauth.Permission
+	GetPermission       *uauthPermissions.Permission
+	GetOthersPermission *uauthPermissions.Permission
 
 	// CreateEndpoint is the http-endpoint-name for create queries
 	// If == nil there will be no create-enpoint
 	CreateEndpoint         *string
 	CreatePreprocess       func(context.Context) error
-	CreatePermission       *uauth.Permission
-	CreateOthersPermission *uauth.Permission
+	CreatePermission       *uauthPermissions.Permission
+	CreateOthersPermission *uauthPermissions.Permission
 
 	// UpdateEndpoint is the http-endpoint-name for update queries
 	// If == nil there will be no update-enpoint
 	UpdateEndpoint         *string
 	UpdatePreprocess       func(context.Context) error
-	UpdatePermission       *uauth.Permission
-	UpdateOthersPermission *uauth.Permission
+	UpdatePermission       *uauthPermissions.Permission
+	UpdateOthersPermission *uauthPermissions.Permission
 
 	// DeleteEndpoint is the http-endpoint-name for delete queries
 	// If == nil there will be no delete-enpoint
 	DeleteEndpoint         *string
 	DeletePreprocess       func(context.Context) error
-	DeletePermission       *uauth.Permission
-	DeleteOthersPermission *uauth.Permission
+	DeletePermission       *uauthPermissions.Permission
+	DeleteOthersPermission *uauthPermissions.Permission
 
 	// ModelService will be called upon for all database interactions
 	ModelService ModelService
