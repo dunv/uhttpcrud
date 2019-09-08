@@ -10,6 +10,8 @@ import (
 	uauthConfig "github.com/dunv/uauth/config"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
+	uhttpModels "github.com/dunv/uhttp/models"
+	uhttpContextKeys "github.com/dunv/uhttp/contextkeys"
 	"github.com/dunv/ulog"
 )
 
@@ -42,7 +44,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Get Params
-		params := r.Context().Value(uhttp.CtxKeyParams).(map[string]interface{})
+		params := r.Context().Value(uhttpContextKeys.CtxKeyParams).(map[string]interface{})
 
 		// GetDB
 		db := r.Context().Value(dbContextKey).(*mongo.Client)
@@ -64,14 +66,14 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 }
 
 // Returns an instance of an get-handler for the configured options
-func GenericGetHandler(options CrudOptions) uhttp.Handler {
-	return uhttp.Handler{
-		GetHandler:   genericGetHandler(options),
-		PreProcess:   options.GetPreprocess,
-		DbRequired:   []uhttp.ContextKey{dbContextKey},
-		AuthRequired: options.GetPermission != nil,
-		RequiredParams: uhttp.Params{ParamMap: map[string]uhttp.ParamRequirement{
-			options.IDParameterName: uhttp.ParamRequirement{AllValues: true},
+func GenericGetHandler(options CrudOptions) uhttpModels.Handler {
+	return uhttpModels.Handler{
+		GetHandler:                genericGetHandler(options),
+		PreProcess:                options.GetPreprocess,
+		AdditionalContextRequired: []uhttpModels.ContextKey{dbContextKey},
+		AuthRequired:              options.GetPermission != nil,
+		RequiredParams: uhttpModels.Params{ParamMap: map[string]uhttpModels.ParamRequirement{
+			options.IDParameterName: uhttpModels.ParamRequirement{AllValues: true},
 		}},
 	}
 }

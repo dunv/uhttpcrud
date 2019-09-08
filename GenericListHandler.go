@@ -8,6 +8,7 @@ import (
 	uauthConfig "github.com/dunv/uauth/config"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
+	uhttpModels "github.com/dunv/uhttp/models"
 	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -59,11 +60,11 @@ func genericListHandler(options CrudOptions) http.HandlerFunc {
 }
 
 // Returns an instance of an list-handler for the configured options
-func GenericListHandler(options CrudOptions) uhttp.Handler {
-	return uhttp.Handler{
-		GetHandler:   genericListHandler(options),
-		PreProcess:   options.ListPreprocess,
-		DbRequired:   []uhttp.ContextKey{dbContextKey},
-		AuthRequired: options.ListPermission != nil,
+func GenericListHandler(options CrudOptions) uhttpModels.Handler {
+	return uhttpModels.Handler{
+		GetHandler:                genericListHandler(options),
+		PreProcess:                options.ListPreprocess,
+		AdditionalContextRequired: []uhttpModels.ContextKey{dbContextKey},
+		AuthRequired:              options.ListPermission != nil,
 	}
 }

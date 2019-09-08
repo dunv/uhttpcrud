@@ -1,12 +1,12 @@
 package uhttpcrud
 
 import (
-	"github.com/dunv/uhttp"
+	uhttpModels "github.com/dunv/uhttp/models"
 )
 
-var dbContextKey uhttp.ContextKey
+var dbContextKey uhttpModels.ContextKey
 
 // SetDBContextKey for users and roles
-func SetDBContextKey(_dbContextKey uhttp.ContextKey) {
+func SetDBContextKey(_dbContextKey uhttpModels.ContextKey) {
 	dbContextKey = _dbContextKey
 }

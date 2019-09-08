@@ -8,6 +8,8 @@ import (
 	uauthConfig "github.com/dunv/uauth/config"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
+	uhttpContextKeys "github.com/dunv/uhttp/contextkeys"
+	uhttpModels "github.com/dunv/uhttp/models"
 	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -27,7 +29,7 @@ func genericCreateHandler(options CrudOptions) http.HandlerFunc {
 			return
 		}
 
-		modelInterface := r.Context().Value(uhttp.CtxKeyPostModel).(WithID)
+		modelInterface := r.Context().Value(uhttpContextKeys.CtxKeyPostModel).(WithID)
 
 		// Get object from db
 		db := r.Context().Value(dbContextKey).(*mongo.Client)
@@ -52,12 +54,12 @@ func genericCreateHandler(options CrudOptions) http.HandlerFunc {
 }
 
 // Returns an instance of an update-handler for the configured options
-func GenericCreateHandler(options CrudOptions) uhttp.Handler {
-	return uhttp.Handler{
-		PostHandler:  genericCreateHandler(options),
-		PostModel:    options.Model,
-		PreProcess:   options.CreatePreprocess,
-		DbRequired:   []uhttp.ContextKey{dbContextKey},
-		AuthRequired: true, // We need a user in order to create an object
+func GenericCreateHandler(options CrudOptions) uhttpModels.Handler {
+	return uhttpModels.Handler{
+		PostHandler:               genericCreateHandler(options),
+		PostModel:                 options.Model,
+		PreProcess:                options.CreatePreprocess,
+		AdditionalContextRequired: []uhttpModels.ContextKey{dbContextKey},
+		AuthRequired:              true, // We need a user in order to create an object
 	}
 }

@@ -9,6 +9,8 @@ import (
 	uauthConfig "github.com/dunv/uauth/config"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
+	uhttpContextKeys "github.com/dunv/uhttp/contextkeys"
+	uhttpModels "github.com/dunv/uhttp/models"
 )
 
 func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
@@ -40,7 +42,7 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Get Params
-		params := r.Context().Value(uhttp.CtxKeyParams).(map[string]interface{})
+		params := r.Context().Value(uhttpContextKeys.CtxKeyParams).(map[string]interface{})
 
 		// GetDB
 		db := r.Context().Value(dbContextKey).(*mongo.Client)
@@ -61,14 +63,14 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 }
 
 // Returns an instance of an delete-handler for the configured options
-func GenericDeleteHandler(options CrudOptions) uhttp.Handler {
-	return uhttp.Handler{
-		DeleteHandler: genericDeleteHandler(options),
-		PreProcess:    options.DeletePreprocess,
-		DbRequired:    []uhttp.ContextKey{dbContextKey},
-		AuthRequired:  true, // We need a user in order to delete an object
-		RequiredParams: uhttp.Params{ParamMap: map[string]uhttp.ParamRequirement{
-			options.IDParameterName: uhttp.ParamRequirement{AllValues: true},
+func GenericDeleteHandler(options CrudOptions) uhttpModels.Handler {
+	return uhttpModels.Handler{
+		DeleteHandler:             genericDeleteHandler(options),
+		PreProcess:                options.DeletePreprocess,
+		AdditionalContextRequired: []uhttpModels.ContextKey{dbContextKey},
+		AuthRequired:              true, // We need a user in order to delete an object
+		RequiredParams: uhttpModels.Params{ParamMap: map[string]uhttpModels.ParamRequirement{
+			options.IDParameterName: uhttpModels.ParamRequirement{AllValues: true},
 		}},
 	}
 }
