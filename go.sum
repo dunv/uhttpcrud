@@ -20,6 +20,8 @@ github.com/dunv/uauth v1.0.25/go.mod h1:tA5nmkgteG57OFWYyW3/J2nP3NbBPm0D617Ma1ZI
 github.com/dunv/uauth v1.0.26 h1:qDcvzvrqYF8qqSTb+jUUP+uYTUfMOCZZYP2Y9Bj+24c=
 github.com/dunv/uauth v1.0.27 h1:GHLxv2tna8XbrXy21UyfBRJ2nxWPwDaWvF1FwJXkmSc=
 github.com/dunv/uauth v1.0.27/go.mod h1:wEiFbtBzph38FC9+e0Ln5i9EnqOxEQyo5bivM5TdjQI=
+github.com/dunv/uauth v1.0.29 h1:hjbfAHDJ0lli0rIPdDcfwDDVTykBVhe4glZaNI0Qa5E=
+github.com/dunv/uauth v1.0.29/go.mod h1:BSHCGeHgWuHF3jTuQR0RugiJ9BLsHYBtJ9WxOju2dck=
 github.com/dunv/uhelpers v1.0.4 h1:EdxjjhT0n9CfpqQuA4V0A+GAxmFhbtNg9CB8EsHoCH8=
 github.com/dunv/uhelpers v1.0.4/go.mod h1:e01Y+aVv/p2Te+5P5pZb6GiaOBce9jxDXE7bpJaBez4=
 github.com/dunv/uhttp v1.0.15 h1:MluMDoBuIVKckIq027MZPqsRKKJxOcjTIrDM4RlSXLA=
@@ -32,6 +34,8 @@ github.com/dunv/uhttp v1.0.20 h1:qHNV5WVsZsnAcPdfEgM8NCT8b2iFTA0h+xWllTKeMAY=
 github.com/dunv/uhttp v1.0.20/go.mod h1:/yoh8ScPoJ00ilmmox7D4Ouovmju6G+Px7xpO8mj4MU=
 github.com/dunv/uhttp v1.0.23 h1:wtdNvpzxBE6JJgacqs/WfCg3gF3zHoeRzNzpXNeMOtg=
 github.com/dunv/uhttp v1.0.23/go.mod h1:Mb5X5mZbqPdmlnx3cAgdH7pSzRU6oLet6stGzGAeJhI=
+github.com/dunv/uhttp v1.0.25 h1:ZZG178Wac9TlaeMi3TDHBaWqfvSdYqhVvSPA0iKx33g=
+github.com/dunv/uhttp v1.0.25/go.mod h1:5IVzioJiJOWDYvevzO2Tre/Q6WELuNBZO8Z16JXtP1I=
 github.com/dunv/ulog v0.0.3 h1:hle649ef7to+MC7ackBW5J11ogONOlnrdeDpBeUHirs=
 github.com/dunv/ulog v0.0.3/go.mod h1:9WOgavOm7uFClydmGepJTrNZbtgQKSUNn5FM9Dvvy9Y=
 github.com/dunv/ulog v0.0.4 h1:GT4DOK2LBP1RvxxU1hMDZrpEzgNSwfC4ptKW3frF+LU=
@@ -39,6 +43,8 @@ github.com/dunv/ulog v0.0.4/go.mod h1:9WOgavOm7uFClydmGepJTrNZbtgQKSUNn5FM9Dvvy9
 github.com/dunv/ulog v0.0.5/go.mod h1:tLx87vZIy7+srmB52LJ8U6Exqnkj5jJ8AaA8cWQp6xs=
 github.com/dunv/ulog v0.0.7 h1:gysQTEP5juIxptEfA/p53nW0SBU7SLOf7n+U4h5TWcs=
 github.com/dunv/ulog v0.0.7/go.mod h1:tLx87vZIy7+srmB52LJ8U6Exqnkj5jJ8AaA8cWQp6xs=
+github.com/dunv/ulog v0.0.8 h1:t18Z1ZPJdemIkCr9jJy/Pept6mpC2tPxGoABsUTLY5E=
+github.com/dunv/ulog v0.0.8/go.mod h1:tLx87vZIy7+srmB52LJ8U6Exqnkj5jJ8AaA8cWQp6xs=
 github.com/dunv/umongo v1.0.8/go.mod h1:GTE/PEH/OJF+EHzgrjwFI3OUSoyu0tJxHbBCg29pNng=
 github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
 github.com/go-logfmt/logfmt v0.3.0/go.mod h1:Qt1PoO58o5twSAckw1HlFXLmHsOX5/0LbT9GBnD5lWE=
