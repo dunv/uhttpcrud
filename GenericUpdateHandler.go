@@ -8,7 +8,7 @@ import (
 	uauthConfig "github.com/dunv/uauth/config"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
-	uhttpContextKeys "github.com/dunv/uhttp/contextkeys"
+	contextKeys "github.com/dunv/uhttp/contextkeys"
 	uhttpModels "github.com/dunv/uhttp/models"
 	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -42,7 +42,7 @@ func genericUpdateHandler(options CrudOptions) http.HandlerFunc {
 			}
 		}
 
-		modelInterface := r.Context().Value(uhttpContextKeys.CtxKeyPostModel).(WithID)
+		modelInterface := r.Context().Value(contextKeys.CtxKeyPostModel).(WithID)
 
 		// Get object from db
 		db := r.Context().Value(dbContextKey).(*mongo.Client)
@@ -79,7 +79,7 @@ func GenericUpdateHandler(options CrudOptions) uhttpModels.Handler {
 		PostHandler:               genericUpdateHandler(options),
 		PostModel:                 options.Model,
 		PreProcess:                options.UpdatePreprocess,
-		AdditionalContextRequired: []uhttpModels.ContextKey{dbContextKey},
+		AdditionalContextRequired: []contextKeys.ContextKey{dbContextKey},
 		AuthRequired:              true, // We need a user in order to update an object
 	}
 }

@@ -10,8 +10,8 @@ import (
 	uauthConfig "github.com/dunv/uauth/config"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
+	contextKeys "github.com/dunv/uhttp/contextkeys"
 	uhttpModels "github.com/dunv/uhttp/models"
-	uhttpContextKeys "github.com/dunv/uhttp/contextkeys"
 	"github.com/dunv/ulog"
 )
 
@@ -44,7 +44,7 @@ func genericGetHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Get Params
-		params := r.Context().Value(uhttpContextKeys.CtxKeyParams).(map[string]interface{})
+		params := r.Context().Value(contextKeys.CtxKeyParams).(map[string]interface{})
 
 		// GetDB
 		db := r.Context().Value(dbContextKey).(*mongo.Client)
@@ -70,7 +70,7 @@ func GenericGetHandler(options CrudOptions) uhttpModels.Handler {
 	return uhttpModels.Handler{
 		GetHandler:                genericGetHandler(options),
 		PreProcess:                options.GetPreprocess,
-		AdditionalContextRequired: []uhttpModels.ContextKey{dbContextKey},
+		AdditionalContextRequired: []contextKeys.ContextKey{dbContextKey},
 		AuthRequired:              options.GetPermission != nil,
 		RequiredParams: uhttpModels.Params{ParamMap: map[string]uhttpModels.ParamRequirement{
 			options.IDParameterName: uhttpModels.ParamRequirement{AllValues: true},

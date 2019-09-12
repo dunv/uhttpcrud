@@ -9,7 +9,7 @@ import (
 	uauthConfig "github.com/dunv/uauth/config"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
-	uhttpContextKeys "github.com/dunv/uhttp/contextkeys"
+	contextKeys "github.com/dunv/uhttp/contextkeys"
 	uhttpModels "github.com/dunv/uhttp/models"
 )
 
@@ -42,7 +42,7 @@ func genericDeleteHandler(options CrudOptions) http.HandlerFunc {
 		}
 
 		// Get Params
-		params := r.Context().Value(uhttpContextKeys.CtxKeyParams).(map[string]interface{})
+		params := r.Context().Value(contextKeys.CtxKeyParams).(map[string]interface{})
 
 		// GetDB
 		db := r.Context().Value(dbContextKey).(*mongo.Client)
@@ -67,7 +67,7 @@ func GenericDeleteHandler(options CrudOptions) uhttpModels.Handler {
 	return uhttpModels.Handler{
 		DeleteHandler:             genericDeleteHandler(options),
 		PreProcess:                options.DeletePreprocess,
-		AdditionalContextRequired: []uhttpModels.ContextKey{dbContextKey},
+		AdditionalContextRequired: []contextKeys.ContextKey{dbContextKey},
 		AuthRequired:              true, // We need a user in order to delete an object
 		RequiredParams: uhttpModels.Params{ParamMap: map[string]uhttpModels.ParamRequirement{
 			options.IDParameterName: uhttpModels.ParamRequirement{AllValues: true},
