@@ -5,61 +5,54 @@ import (
 	"fmt"
 	"net/http"
 
-	uauthConfig "github.com/dunv/uauth/config"
-	uauthModels "github.com/dunv/uauth/models"
+	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
-	contextKeys "github.com/dunv/uhttp/contextkeys"
 	uhttpModels "github.com/dunv/uhttp/models"
 	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func genericCreateHandler(options CrudOptions) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Sanity check: CreateOthersPermission can only be set if CreatePermission is set
-		if options.CreatePermission == nil && options.CreateOthersPermission != nil {
-			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: CreateOthersPermission can only be set if CreatePermission is set.")
-			return
-		}
-
-		// Get User
-		user := r.Context().Value(uauthConfig.CtxKeyUser).(uauthModels.User)
-		if options.CreatePermission != nil && !user.CheckPermission(*options.CreatePermission) {
-			uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.CreatePermission))
-			return
-		}
-
-		modelInterface := r.Context().Value(contextKeys.CtxKeyPostModel).(WithID)
-
-		// Get object from db
-		db := r.Context().Value(dbContextKey).(*mongo.Client)
-		service := options.ModelService.CopyAndInit(db, options.Database)
-
-		// Check if all required populated fields are populated (indexes)
-		if !service.Validate(modelInterface) {
-			uhttp.RenderError(w, r, fmt.Errorf("Non-nullable properties are null"))
-			return
-		}
-
-		// Create (will return an error if already exists)
-		createdDocument, err := service.Create(modelInterface, &user)
-		if err != nil {
-			uhttp.RenderError(w, r, err)
-			return
-		}
-
-		// Answer
-		ulog.LogIfError(json.NewEncoder(w).Encode(createdDocument))
-	})
-}
-
 // Returns an instance of an update-handler for the configured options
-func GenericCreateHandler(options CrudOptions) uhttpModels.Handler {
+func genericCreateHandler(options CrudOptions) uhttpModels.Handler {
 	return uhttpModels.Handler{
-		PostHandler:               genericCreateHandler(options),
-		PostModel:                 options.Model,
-		PreProcess:                options.CreatePreprocess,
-		AdditionalContextRequired: []contextKeys.ContextKey{dbContextKey},
-		AuthRequired:              true, // We need a user in order to create an object
+		PostModel:    options.Model,
+		PreProcess:   options.CreatePreprocess,
+		AuthRequired: true, // We need a user in order to create an object
+		PostHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Sanity check: CreateOthersPermission can only be set if CreatePermission is set
+			if options.CreatePermission == nil && options.CreateOthersPermission != nil {
+				uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: CreateOthersPermission can only be set if CreatePermission is set.")
+				return
+			}
+
+			// Get User
+			user := uauth.User(r)
+			if options.CreatePermission != nil && !user.CheckPermission(*options.CreatePermission) {
+				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.CreatePermission))
+				return
+			}
+
+			modelInterface := getWithIDFromPostModel(r)
+
+			// Get object from db
+			db := r.Context().Value(dbContextKey).(*mongo.Client)
+			service := options.ModelService.CopyAndInit(db, options.Database)
+
+			// Check if all required populated fields are populated (indexes)
+			if !service.Validate(modelInterface) {
+				uhttp.RenderError(w, r, fmt.Errorf("Non-nullable properties are null"))
+				return
+			}
+
+			// Create (will return an error if already exists)
+			createdDocument, err := service.Create(modelInterface, &user)
+			if err != nil {
+				uhttp.RenderError(w, r, err)
+				return
+			}
+
+			// Answer
+			ulog.LogIfError(json.NewEncoder(w).Encode(createdDocument))
+		}),
 	}
 }

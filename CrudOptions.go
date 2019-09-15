@@ -60,18 +60,18 @@ type CrudOptions struct {
 // CreateEndpoints adds all handlers configured in CrudOptions using the uhttp-framework
 func (o CrudOptions) CreateEndpoints() {
 	if o.GetEndpoint != nil {
-		uhttp.Handle(*o.GetEndpoint, GenericGetHandler(o))
+		uhttp.Handle(*o.GetEndpoint, genericGetHandler(o))
 	}
 	if o.ListEndpoint != nil {
-		uhttp.Handle(*o.ListEndpoint, GenericListHandler(o))
+		uhttp.Handle(*o.ListEndpoint, genericListHandler(o))
 	}
 	if o.CreateEndpoint != nil {
-		uhttp.Handle(*o.CreateEndpoint, GenericCreateHandler(o))
+		uhttp.Handle(*o.CreateEndpoint, genericCreateHandler(o))
 	}
 	if o.UpdateEndpoint != nil {
-		uhttp.Handle(*o.UpdateEndpoint, GenericUpdateHandler(o))
+		uhttp.Handle(*o.UpdateEndpoint, genericUpdateHandler(o))
 	}
 	if o.DeleteEndpoint != nil {
-		uhttp.Handle(*o.DeleteEndpoint, GenericDeleteHandler(o))
+		uhttp.Handle(*o.DeleteEndpoint, genericDeleteHandler(o))
 	}
 }

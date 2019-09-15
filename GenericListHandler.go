@@ -5,67 +5,60 @@ import (
 	"fmt"
 	"net/http"
 
-	uauthConfig "github.com/dunv/uauth/config"
+	"github.com/dunv/uauth"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
-	contextKeys "github.com/dunv/uhttp/contextkeys"
 	uhttpModels "github.com/dunv/uhttp/models"
 	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func genericListHandler(options CrudOptions) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// Returns an instance of an list-handler for the configured options
+func genericListHandler(options CrudOptions) uhttpModels.Handler {
+	return uhttpModels.Handler{
+		PreProcess:   options.ListPreprocess,
+		AuthRequired: options.ListPermission != nil,
+		GetHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		// Sanity check: ListOthersPermission can only be set if ListPermission is set
-		if options.ListPermission == nil && options.ListOthersPermission != nil {
-			uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: ListOthersPermission can only be set if ListPermission is set.")
-			return
-		}
-
-		// Check permissions
-		var limitToUser *uauthModels.User
-		var tmpUser uauthModels.User
-		if options.ListPermission != nil {
-			tmpUser = r.Context().Value(uauthConfig.CtxKeyUser).(uauthModels.User)
-
-			// Return nothing, if listPermission is required but the user does not have it
-			if !tmpUser.CheckPermission(*options.ListPermission) {
-				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission))
+			// Sanity check: ListOthersPermission can only be set if ListPermission is set
+			if options.ListPermission == nil && options.ListOthersPermission != nil {
+				uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: ListOthersPermission can only be set if ListPermission is set.")
 				return
 			}
 
-			// Limit results if ListOthersPermission is required but the user does not have it
-			if options.ListOthersPermission != nil {
-				if !tmpUser.CheckPermission(*options.ListOthersPermission) {
-					limitToUser = &tmpUser
+			// Check permissions
+			var limitToUser *uauthModels.User
+			var tmpUser uauthModels.User
+			if options.ListPermission != nil {
+				// Return nothing, if listPermission is required but the user does not have it
+				tmpUser = uauth.User(r)
+				if !tmpUser.CheckPermission(*options.ListPermission) {
+					uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission))
+					return
+				}
+
+				// Limit results if ListOthersPermission is required but the user does not have it
+				if options.ListOthersPermission != nil {
+					if !tmpUser.CheckPermission(*options.ListOthersPermission) {
+						limitToUser = &tmpUser
+					}
 				}
 			}
-		}
 
-		// GetDB
-		db := r.Context().Value(dbContextKey).(*mongo.Client)
-		service := options.ModelService.CopyAndInit(db, options.Database)
+			// GetDB
+			db := r.Context().Value(dbContextKey).(*mongo.Client)
+			service := options.ModelService.CopyAndInit(db, options.Database)
 
-		// Load
-		objsFromDb, err := service.List(&tmpUser, limitToUser != nil)
-		if err != nil {
-			uhttp.RenderError(w, r, err)
+			// Load
+			objsFromDb, err := service.List(&tmpUser, limitToUser != nil)
+			if err != nil {
+				uhttp.RenderError(w, r, err)
+				return
+			}
+
+			// Render Response
+			ulog.LogIfError(json.NewEncoder(w).Encode(objsFromDb))
 			return
-		}
-
-		// Render Response
-		ulog.LogIfError(json.NewEncoder(w).Encode(objsFromDb))
-		return
-	})
-}
-
-// Returns an instance of an list-handler for the configured options
-func GenericListHandler(options CrudOptions) uhttpModels.Handler {
-	return uhttpModels.Handler{
-		GetHandler:                genericListHandler(options),
-		PreProcess:                options.ListPreprocess,
-		AdditionalContextRequired: []contextKeys.ContextKey{dbContextKey},
-		AuthRequired:              options.ListPermission != nil,
+		}),
 	}
 }
