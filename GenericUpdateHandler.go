@@ -15,9 +15,9 @@ import (
 
 func genericUpdateHandler(options CrudOptions) uhttpModels.Handler {
 	return uhttpModels.Handler{
-		PostModel:    options.Model,
-		PreProcess:   options.UpdatePreprocess,
-		AuthRequired: true, // We need a user in order to update an object
+		PostModel:     options.Model,
+		PreProcess:    options.UpdatePreprocess,
+		AddMiddleware: uauth.AuthJWT(), // We need a user in order to update an object
 		PostHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Sanity check: UpdateOthersPermission can only be set if UpdatePermission is set
 			if options.UpdatePermission == nil && options.UpdateOthersPermission != nil {

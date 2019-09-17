@@ -16,8 +16,8 @@ import (
 // Returns an instance of an delete-handler for the configured options
 func genericDeleteHandler(options CrudOptions) uhttpModels.Handler {
 	return uhttpModels.Handler{
-		PreProcess:   options.DeletePreprocess,
-		AuthRequired: true, // We need a user in order to delete an object
+		PreProcess:    options.DeletePreprocess,
+		AddMiddleware: uauth.AuthJWT(), // We need a user in order to delete an object
 		RequiredGet: params.R{
 			options.IDParameterName: params.STRING,
 		},

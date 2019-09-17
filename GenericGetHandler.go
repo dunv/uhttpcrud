@@ -17,9 +17,13 @@ import (
 
 // Returns an instance of an get-handler for the configured options
 func genericGetHandler(options CrudOptions) uhttpModels.Handler {
+	var middleware *uhttpModels.Middleware
+	if options.GetPermission != nil {
+		middleware = uauth.AuthJWT()
+	}
 	return uhttpModels.Handler{
-		PreProcess:   options.GetPreprocess,
-		AuthRequired: options.GetPermission != nil,
+		PreProcess:    options.GetPreprocess,
+		AddMiddleware: middleware,
 		RequiredGet: params.R{
 			options.IDParameterName: params.STRING,
 		},

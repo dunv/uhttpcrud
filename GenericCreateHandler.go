@@ -15,9 +15,9 @@ import (
 // Returns an instance of an update-handler for the configured options
 func genericCreateHandler(options CrudOptions) uhttpModels.Handler {
 	return uhttpModels.Handler{
-		PostModel:    options.Model,
-		PreProcess:   options.CreatePreprocess,
-		AuthRequired: true, // We need a user in order to create an object
+		PostModel:     options.Model,
+		PreProcess:    options.CreatePreprocess,
+		AddMiddleware: uauth.AuthJWT(), // We need a user in order to create an object
 		PostHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Sanity check: CreateOthersPermission can only be set if CreatePermission is set
 			if options.CreatePermission == nil && options.CreateOthersPermission != nil {

@@ -15,9 +15,13 @@ import (
 
 // Returns an instance of an list-handler for the configured options
 func genericListHandler(options CrudOptions) uhttpModels.Handler {
+	var middleware *uhttpModels.Middleware
+	if options.ListPermission != nil {
+		middleware = uauth.AuthJWT()
+	}
 	return uhttpModels.Handler{
-		PreProcess:   options.ListPreprocess,
-		AuthRequired: options.ListPermission != nil,
+		PreProcess:    options.ListPreprocess,
+		AddMiddleware: middleware,
 		GetHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			// Sanity check: ListOthersPermission can only be set if ListPermission is set
