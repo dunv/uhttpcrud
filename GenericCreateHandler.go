@@ -7,14 +7,13 @@ import (
 
 	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
-	uhttpModels "github.com/dunv/uhttp/models"
 	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Returns an instance of an update-handler for the configured options
-func genericCreateHandler(options CrudOptions) uhttpModels.Handler {
-	return uhttpModels.Handler{
+func genericCreateHandler(options CrudOptions) uhttp.Handler {
+	return uhttp.Handler{
 		PostModel:     options.Model,
 		PreProcess:    options.CreatePreprocess,
 		AddMiddleware: uauth.AuthJWT(), // We need a user in order to create an object

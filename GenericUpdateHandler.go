@@ -8,13 +8,12 @@ import (
 	"github.com/dunv/uauth"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
-	uhttpModels "github.com/dunv/uhttp/models"
 	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func genericUpdateHandler(options CrudOptions) uhttpModels.Handler {
-	return uhttpModels.Handler{
+func genericUpdateHandler(options CrudOptions) uhttp.Handler {
+	return uhttp.Handler{
 		PostModel:     options.Model,
 		PreProcess:    options.UpdatePreprocess,
 		AddMiddleware: uauth.AuthJWT(), // We need a user in order to update an object

@@ -8,18 +8,17 @@ import (
 	"github.com/dunv/uauth"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
-	uhttpModels "github.com/dunv/uhttp/models"
 	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Returns an instance of an list-handler for the configured options
-func genericListHandler(options CrudOptions) uhttpModels.Handler {
-	var middleware *uhttpModels.Middleware
+func genericListHandler(options CrudOptions) uhttp.Handler {
+	var middleware *uhttp.Middleware
 	if options.ListPermission != nil {
 		middleware = uauth.AuthJWT()
 	}
-	return uhttpModels.Handler{
+	return uhttp.Handler{
 		PreProcess:    options.ListPreprocess,
 		AddMiddleware: middleware,
 		GetHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

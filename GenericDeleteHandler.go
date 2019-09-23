@@ -9,13 +9,12 @@ import (
 	"github.com/dunv/uauth"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
-	uhttpModels "github.com/dunv/uhttp/models"
 	"github.com/dunv/uhttp/params"
 )
 
 // Returns an instance of an delete-handler for the configured options
-func genericDeleteHandler(options CrudOptions) uhttpModels.Handler {
-	return uhttpModels.Handler{
+func genericDeleteHandler(options CrudOptions) uhttp.Handler {
+	return uhttp.Handler{
 		PreProcess:    options.DeletePreprocess,
 		AddMiddleware: uauth.AuthJWT(), // We need a user in order to delete an object
 		RequiredGet: params.R{

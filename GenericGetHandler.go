@@ -10,18 +10,17 @@ import (
 	"github.com/dunv/uauth"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
-	uhttpModels "github.com/dunv/uhttp/models"
 	"github.com/dunv/uhttp/params"
 	"github.com/dunv/ulog"
 )
 
 // Returns an instance of an get-handler for the configured options
-func genericGetHandler(options CrudOptions) uhttpModels.Handler {
-	var middleware *uhttpModels.Middleware
+func genericGetHandler(options CrudOptions) uhttp.Handler {
+	var middleware *uhttp.Middleware
 	if options.GetPermission != nil {
 		middleware = uauth.AuthJWT()
 	}
-	return uhttpModels.Handler{
+	return uhttp.Handler{
 		PreProcess:    options.GetPreprocess,
 		AddMiddleware: middleware,
 		RequiredGet: params.R{
