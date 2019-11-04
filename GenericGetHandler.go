@@ -68,7 +68,6 @@ func genericGetHandler(options CrudOptions) uhttp.Handler {
 			}
 
 			ulog.LogIfError(json.NewEncoder(w).Encode(objFromDb))
-			return
 		}),
 	}
 }
