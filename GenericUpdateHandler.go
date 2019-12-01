@@ -60,7 +60,7 @@ func genericUpdateHandler(options CrudOptions) uhttp.Handler {
 			// Check if already exists
 			_, err := service.Get(idFromModel, &user, limitToUser != nil)
 			if err != nil {
-				uhttp.RenderError(w, r, fmt.Errorf("No object with the id %s exists", modelInterface.(WithID).GetID()))
+				uhttp.RenderError(w, r, fmt.Errorf("No object with the id %s exists (%s)", modelInterface.(WithID).GetID(), err))
 				return
 			}
 
