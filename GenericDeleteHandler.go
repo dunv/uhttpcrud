@@ -14,12 +14,17 @@ import (
 
 // Returns an instance of an delete-handler for the configured options
 func genericDeleteHandler(options CrudOptions) uhttp.Handler {
+	requiredGet := options.DeleteRequiredGet
+	if requiredGet == nil {
+		requiredGet = params.R{}
+	}
+	requiredGet[options.IDParameterName] = params.STRING
+
 	return uhttp.Handler{
 		PreProcess:    options.DeletePreprocess,
 		AddMiddleware: uauth.AuthJWT(), // We need a user in order to delete an object
-		RequiredGet: params.R{
-			options.IDParameterName: params.STRING,
-		},
+		RequiredGet:   requiredGet,
+		OptionalGet:   options.DeleteOptionalGet,
 		DeleteHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Sanity check: DeleteOthersPermission can only be set if DeletePermission is set
 			if options.DeletePermission == nil && options.DeleteOthersPermission != nil {
@@ -52,7 +57,7 @@ func genericDeleteHandler(options CrudOptions) uhttp.Handler {
 			objectID := params.GetAsString(options.IDParameterName, r)
 
 			// Delete
-			err := service.Delete(*objectID, &user, limitToUser != nil)
+			err := service.Delete(*objectID, &user, limitToUser != nil, r.Context())
 			if err != nil {
 				uhttp.RenderError(w, r, err)
 				return

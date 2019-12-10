@@ -1,13 +1,11 @@
 package uhttpcrud
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
-	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -16,6 +14,8 @@ func genericCreateHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		PostModel:     options.Model,
 		PreProcess:    options.CreatePreprocess,
+		RequiredGet:   options.CreateRequiredGet,
+		OptionalGet:   options.CreateOptionalGet,
 		AddMiddleware: uauth.AuthJWT(), // We need a user in order to create an object
 		PostHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Sanity check: CreateOthersPermission can only be set if CreatePermission is set
@@ -44,14 +44,14 @@ func genericCreateHandler(options CrudOptions) uhttp.Handler {
 			}
 
 			// Create (will return an error if already exists)
-			createdDocument, err := service.Create(modelInterface, &user)
+			createdDocument, err := service.Create(modelInterface, &user, r.Context())
 			if err != nil {
 				uhttp.RenderError(w, r, err)
 				return
 			}
 
 			// Answer
-			ulog.LogIfError(json.NewEncoder(w).Encode(createdDocument))
+			uhttp.Render(w, r, createdDocument)
 		}),
 	}
 }

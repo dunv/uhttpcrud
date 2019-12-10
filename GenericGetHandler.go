@@ -1,7 +1,6 @@
 package uhttpcrud
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -11,7 +10,6 @@ import (
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
 	"github.com/dunv/uhttp/params"
-	"github.com/dunv/ulog"
 )
 
 // Returns an instance of an get-handler for the configured options
@@ -20,12 +18,18 @@ func genericGetHandler(options CrudOptions) uhttp.Handler {
 	if options.GetPermission != nil {
 		middleware = uauth.AuthJWT()
 	}
+
+	requiredGet := options.GetRequiredGet
+	if requiredGet == nil {
+		requiredGet = params.R{}
+	}
+	requiredGet[options.IDParameterName] = params.STRING
+
 	return uhttp.Handler{
 		PreProcess:    options.GetPreprocess,
 		AddMiddleware: middleware,
-		RequiredGet: params.R{
-			options.IDParameterName: params.STRING,
-		},
+		RequiredGet:   requiredGet,
+		OptionalGet:   options.GetOptionalGet,
 		GetHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Sanity check: GetOthersPermission can only be set if GetPermission is set
 			if options.GetPermission == nil && options.GetOthersPermission != nil {
@@ -60,14 +64,14 @@ func genericGetHandler(options CrudOptions) uhttp.Handler {
 			// Get
 			objectID := params.GetAsString(options.IDParameterName, r)
 			var objFromDb interface{}
-			objFromDb, err := service.Get(*objectID, &tmpUser, limitToUser != nil)
+			objFromDb, err := service.Get(*objectID, &tmpUser, limitToUser != nil, r.Context())
 
 			if err != nil {
 				uhttp.RenderError(w, r, fmt.Errorf("Could not find object with ID: '%s'", *objectID))
 				return
 			}
 
-			ulog.LogIfError(json.NewEncoder(w).Encode(objFromDb))
+			uhttp.Render(w, r, objFromDb)
 		}),
 	}
 }

@@ -5,6 +5,7 @@ import (
 
 	uauthPermissions "github.com/dunv/uauth/permissions"
 	"github.com/dunv/uhttp"
+	"github.com/dunv/uhttp/params"
 )
 
 type CrudOptions struct {
@@ -21,6 +22,8 @@ type CrudOptions struct {
 	ListPreprocess       func(context.Context) error
 	ListPermission       *uauthPermissions.Permission
 	ListOthersPermission *uauthPermissions.Permission
+	ListRequiredGet      params.R
+	ListOptionalGet      params.R
 
 	// GetEndpoint is the http-endpoint-name for get queries
 	// If == nil there will be no get-enpoint
@@ -28,6 +31,8 @@ type CrudOptions struct {
 	GetPreprocess       func(context.Context) error
 	GetPermission       *uauthPermissions.Permission
 	GetOthersPermission *uauthPermissions.Permission
+	GetRequiredGet      params.R
+	GetOptionalGet      params.R
 
 	// CreateEndpoint is the http-endpoint-name for create queries
 	// If == nil there will be no create-enpoint
@@ -35,6 +40,8 @@ type CrudOptions struct {
 	CreatePreprocess       func(context.Context) error
 	CreatePermission       *uauthPermissions.Permission
 	CreateOthersPermission *uauthPermissions.Permission
+	CreateRequiredGet      params.R
+	CreateOptionalGet      params.R
 
 	// UpdateEndpoint is the http-endpoint-name for update queries
 	// If == nil there will be no update-enpoint
@@ -42,6 +49,8 @@ type CrudOptions struct {
 	UpdatePreprocess       func(context.Context) error
 	UpdatePermission       *uauthPermissions.Permission
 	UpdateOthersPermission *uauthPermissions.Permission
+	UpdateRequiredGet      params.R
+	UpdateOptionalGet      params.R
 
 	// DeleteEndpoint is the http-endpoint-name for delete queries
 	// If == nil there will be no delete-enpoint
@@ -49,6 +58,8 @@ type CrudOptions struct {
 	DeletePreprocess       func(context.Context) error
 	DeletePermission       *uauthPermissions.Permission
 	DeleteOthersPermission *uauthPermissions.Permission
+	DeleteRequiredGet      params.R
+	DeleteOptionalGet      params.R
 
 	// ModelService will be called upon for all database interactions
 	ModelService ModelService

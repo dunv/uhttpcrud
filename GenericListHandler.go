@@ -1,14 +1,12 @@
 package uhttpcrud
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/dunv/uauth"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
-	"github.com/dunv/ulog"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -21,6 +19,8 @@ func genericListHandler(options CrudOptions) uhttp.Handler {
 	return uhttp.Handler{
 		PreProcess:    options.ListPreprocess,
 		AddMiddleware: middleware,
+		RequiredGet:   options.ListRequiredGet,
+		OptionalGet:   options.ListOptionalGet,
 		GetHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			// Sanity check: ListOthersPermission can only be set if ListPermission is set
@@ -53,14 +53,14 @@ func genericListHandler(options CrudOptions) uhttp.Handler {
 			service := options.ModelService.CopyAndInit(db, options.Database)
 
 			// Load
-			objsFromDb, err := service.List(&tmpUser, limitToUser != nil)
+			objsFromDb, err := service.List(&tmpUser, limitToUser != nil, r.Context())
 			if err != nil {
 				uhttp.RenderError(w, r, err)
 				return
 			}
 
 			// Render Response
-			ulog.LogIfError(json.NewEncoder(w).Encode(objsFromDb))
+			uhttp.Render(w, r, objsFromDb)
 		}),
 	}
 }
