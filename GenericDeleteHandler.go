@@ -9,16 +9,15 @@ import (
 	"github.com/dunv/uauth"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
-	"github.com/dunv/uhttp/params"
 )
 
 // Returns an instance of an delete-handler for the configured options
 func genericDeleteHandler(options CrudOptions) uhttp.Handler {
 	requiredGet := options.DeleteRequiredGet
 	if requiredGet == nil {
-		requiredGet = params.R{}
+		requiredGet = uhttp.R{}
 	}
-	requiredGet[options.IDParameterName] = params.STRING
+	requiredGet[options.IDParameterName] = uhttp.STRING
 
 	return uhttp.Handler{
 		PreProcess:    options.DeletePreprocess,
@@ -54,7 +53,7 @@ func genericDeleteHandler(options CrudOptions) uhttp.Handler {
 			// GetDB
 			db := r.Context().Value(dbContextKey).(*mongo.Client)
 			service := options.ModelService.CopyAndInit(db, options.Database)
-			objectID := params.GetAsString(options.IDParameterName, r)
+			objectID := uhttp.GetAsString(options.IDParameterName, r)
 
 			// Delete
 			err := service.Delete(*objectID, &user, limitToUser != nil, r.Context())

@@ -9,7 +9,6 @@ import (
 	"github.com/dunv/uauth"
 	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
-	"github.com/dunv/uhttp/params"
 )
 
 // Returns an instance of an get-handler for the configured options
@@ -21,9 +20,9 @@ func genericGetHandler(options CrudOptions) uhttp.Handler {
 
 	requiredGet := options.GetRequiredGet
 	if requiredGet == nil {
-		requiredGet = params.R{}
+		requiredGet = uhttp.R{}
 	}
-	requiredGet[options.IDParameterName] = params.STRING
+	requiredGet[options.IDParameterName] = uhttp.STRING
 
 	return uhttp.Handler{
 		PreProcess:    options.GetPreprocess,
@@ -62,7 +61,7 @@ func genericGetHandler(options CrudOptions) uhttp.Handler {
 			service := options.ModelService.CopyAndInit(db, options.Database)
 
 			// Get
-			objectID := params.GetAsString(options.IDParameterName, r)
+			objectID := uhttp.GetAsString(options.IDParameterName, r)
 			var objFromDb interface{}
 			objFromDb, err := service.Get(*objectID, &tmpUser, limitToUser != nil, r.Context())
 

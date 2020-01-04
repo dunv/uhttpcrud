@@ -3,7 +3,7 @@ package uhttpcrud
 import (
 	"net/http"
 
-	contextKeys "github.com/dunv/uhttp/contextkeys"
+	"github.com/dunv/uhttp"
 )
 
 // WithID makes sure the struct in question has a gettable ID property for DB-operations
@@ -13,5 +13,5 @@ type WithID interface {
 }
 
 func getWithIDFromPostModel(r *http.Request) WithID {
-	return r.Context().Value(contextKeys.CtxKeyPostModel).(WithID)
+	return r.Context().Value(uhttp.CtxKeyPostModel).(WithID)
 }
