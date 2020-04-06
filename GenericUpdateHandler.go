@@ -5,9 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dunv/uauth"
-	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func genericUpdateHandler(options CrudOptions) uhttp.Handler {
@@ -25,10 +23,15 @@ func genericUpdateHandler(options CrudOptions) uhttp.Handler {
 			}
 
 			// Check permissions
-			var user uauthModels.User
-			var limitToUser *uauthModels.User
+			var user *uauth.User
+			var limitToUser *uauth.User
+			var err error
 			if options.UpdatePermission != nil {
-				user = uauth.User(r)
+				user, err = uauth.UserFromRequest(r)
+				if err != nil {
+					uhttp.RenderError(w, r, fmt.Errorf("Could not get user (%s)", err))
+					return
+				}
 
 				// Return nothing, if updatePermission is required but the user does not have it
 				if !user.CheckPermission(*options.UpdatePermission) {
@@ -39,33 +42,34 @@ func genericUpdateHandler(options CrudOptions) uhttp.Handler {
 				// Limit results if UpdateOthersPermission is required but the user does not have it
 				if options.UpdateOthersPermission != nil {
 					if !user.CheckPermission(*options.UpdateOthersPermission) {
-						limitToUser = &user
+						limitToUser = user
 					}
 				}
 			}
 
 			modelInterface := getWithIDFromPostModel(r)
 
-			// Get object from db
-			db := r.Context().Value(dbContextKey).(*mongo.Client)
-			service := options.ModelService.CopyAndInit(db, options.Database)
-
 			// Check if all required populated fields are populated (indexes)
-			idFromModel := modelInterface.(WithID).GetID()
-			if idFromModel == "" || !service.Validate(modelInterface) {
+			idFromModel, err := modelInterface.(WithID).GetID()
+			if err != nil {
+				uhttp.RenderError(w, r, fmt.Errorf("could not getID (%s)", err))
+				return
+			}
+
+			if idFromModel == "" || !options.ModelService.Validate(modelInterface) {
 				uhttp.RenderError(w, r, fmt.Errorf("Non-nullable properties are null or no ID present"))
 				return
 			}
 
 			// Check if already exists
-			_, err := service.Get(idFromModel, &user, limitToUser != nil, r.Context())
+			_, err = options.ModelService.Get(idFromModel, limitToUser != nil, r.Context())
 			if err != nil {
-				uhttp.RenderError(w, r, fmt.Errorf("No object with the id %s exists (%s)", modelInterface.(WithID).GetID(), err))
+				uhttp.RenderError(w, r, fmt.Errorf("No object with the id %s exists (%s)", idFromModel, err))
 				return
 			}
 
 			// Actual update
-			updatedDocument, err := service.Update(modelInterface, &user, limitToUser != nil, r.Context())
+			updatedDocument, err := options.ModelService.Update(modelInterface, limitToUser != nil, r.Context())
 			if err != nil {
 				uhttp.RenderError(w, r, err)
 				return

@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/mongo-driver/mongo"
-
 	"github.com/dunv/uauth"
-	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
 )
 
@@ -32,11 +29,17 @@ func genericDeleteHandler(options CrudOptions) uhttp.Handler {
 			}
 
 			// Check permissions
-			var user uauthModels.User
-			var limitToUser *uauthModels.User
+			var user *uauth.User
+			var limitToUser *uauth.User
+			var err error
 			if options.DeletePermission != nil {
 				// Return nothing, if deletePermission is required but the user does not have it
-				user = uauth.User(r)
+				user, err = uauth.UserFromRequest(r)
+				if err != nil {
+					uhttp.RenderError(w, r, fmt.Errorf("Could not get user (%s)", err))
+					return
+				}
+
 				if !user.CheckPermission(*options.DeletePermission) {
 					uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.DeletePermission))
 					return
@@ -45,18 +48,16 @@ func genericDeleteHandler(options CrudOptions) uhttp.Handler {
 				// Limit results if DeleteOthersPermission is required but the user does not have it
 				if options.DeleteOthersPermission != nil {
 					if !user.CheckPermission(*options.DeleteOthersPermission) {
-						limitToUser = &user
+						limitToUser = user
 					}
 				}
 			}
 
 			// GetDB
-			db := r.Context().Value(dbContextKey).(*mongo.Client)
-			service := options.ModelService.CopyAndInit(db, options.Database)
 			objectID := uhttp.GetAsString(options.IDParameterName, r)
 
 			// Delete
-			err := service.Delete(*objectID, &user, limitToUser != nil, r.Context())
+			err = options.ModelService.Delete(*objectID, limitToUser != nil, r.Context())
 			if err != nil {
 				uhttp.RenderError(w, r, err)
 				return

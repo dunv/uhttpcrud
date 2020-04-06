@@ -3,7 +3,7 @@ package uhttpcrud
 import (
 	"context"
 
-	uauthPermissions "github.com/dunv/uauth/permissions"
+	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
 )
 
@@ -19,8 +19,8 @@ type CrudOptions struct {
 	// If == nil there will be no list-enpoint
 	ListEndpoint         *string
 	ListPreprocess       func(context.Context) error
-	ListPermission       *uauthPermissions.Permission
-	ListOthersPermission *uauthPermissions.Permission
+	ListPermission       *uauth.Permission
+	ListOthersPermission *uauth.Permission
 	ListRequiredGet      uhttp.R
 	ListOptionalGet      uhttp.R
 
@@ -28,8 +28,8 @@ type CrudOptions struct {
 	// If == nil there will be no get-enpoint
 	GetEndpoint         *string
 	GetPreprocess       func(context.Context) error
-	GetPermission       *uauthPermissions.Permission
-	GetOthersPermission *uauthPermissions.Permission
+	GetPermission       *uauth.Permission
+	GetOthersPermission *uauth.Permission
 	GetRequiredGet      uhttp.R
 	GetOptionalGet      uhttp.R
 
@@ -37,8 +37,8 @@ type CrudOptions struct {
 	// If == nil there will be no create-enpoint
 	CreateEndpoint         *string
 	CreatePreprocess       func(context.Context) error
-	CreatePermission       *uauthPermissions.Permission
-	CreateOthersPermission *uauthPermissions.Permission
+	CreatePermission       *uauth.Permission
+	CreateOthersPermission *uauth.Permission
 	CreateRequiredGet      uhttp.R
 	CreateOptionalGet      uhttp.R
 
@@ -46,8 +46,8 @@ type CrudOptions struct {
 	// If == nil there will be no update-enpoint
 	UpdateEndpoint         *string
 	UpdatePreprocess       func(context.Context) error
-	UpdatePermission       *uauthPermissions.Permission
-	UpdateOthersPermission *uauthPermissions.Permission
+	UpdatePermission       *uauth.Permission
+	UpdateOthersPermission *uauth.Permission
 	UpdateRequiredGet      uhttp.R
 	UpdateOptionalGet      uhttp.R
 
@@ -55,8 +55,8 @@ type CrudOptions struct {
 	// If == nil there will be no delete-enpoint
 	DeleteEndpoint         *string
 	DeletePreprocess       func(context.Context) error
-	DeletePermission       *uauthPermissions.Permission
-	DeleteOthersPermission *uauthPermissions.Permission
+	DeletePermission       *uauth.Permission
+	DeleteOthersPermission *uauth.Permission
 	DeleteRequiredGet      uhttp.R
 	DeleteOptionalGet      uhttp.R
 

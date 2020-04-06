@@ -6,7 +6,6 @@ import (
 
 	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Returns an instance of an update-handler for the configured options
@@ -25,7 +24,12 @@ func genericCreateHandler(options CrudOptions) uhttp.Handler {
 			}
 
 			// Get User
-			user := uauth.User(r)
+			user, err := uauth.UserFromRequest(r)
+			if err != nil {
+				uhttp.RenderError(w, r, fmt.Errorf("Could not get user (%s)", err))
+				return
+			}
+
 			if options.CreatePermission != nil && !user.CheckPermission(*options.CreatePermission) {
 				uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.CreatePermission))
 				return
@@ -33,18 +37,14 @@ func genericCreateHandler(options CrudOptions) uhttp.Handler {
 
 			modelInterface := getWithIDFromPostModel(r)
 
-			// Get object from db
-			db := r.Context().Value(dbContextKey).(*mongo.Client)
-			service := options.ModelService.CopyAndInit(db, options.Database)
-
 			// Check if all required populated fields are populated (indexes)
-			if !service.Validate(modelInterface) {
+			if !options.ModelService.Validate(modelInterface) {
 				uhttp.RenderError(w, r, fmt.Errorf("Non-nullable properties are null"))
 				return
 			}
 
 			// Create (will return an error if already exists)
-			createdDocument, err := service.Create(modelInterface, &user, r.Context())
+			createdDocument, err := options.ModelService.Create(modelInterface, r.Context())
 			if err != nil {
 				uhttp.RenderError(w, r, err)
 				return

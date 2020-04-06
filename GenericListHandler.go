@@ -5,9 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dunv/uauth"
-	uauthModels "github.com/dunv/uauth/models"
 	"github.com/dunv/uhttp"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Returns an instance of an list-handler for the configured options
@@ -30,11 +28,17 @@ func genericListHandler(options CrudOptions) uhttp.Handler {
 			}
 
 			// Check permissions
-			var limitToUser *uauthModels.User
-			var tmpUser uauthModels.User
+			var limitToUser *uauth.User
+			var tmpUser *uauth.User
+			var err error
 			if options.ListPermission != nil {
 				// Return nothing, if listPermission is required but the user does not have it
-				tmpUser = uauth.User(r)
+				tmpUser, err = uauth.UserFromRequest(r)
+				if err != nil {
+					uhttp.RenderError(w, r, fmt.Errorf("Could not get user (%s)", err))
+					return
+				}
+
 				if !tmpUser.CheckPermission(*options.ListPermission) {
 					uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission))
 					return
@@ -43,17 +47,13 @@ func genericListHandler(options CrudOptions) uhttp.Handler {
 				// Limit results if ListOthersPermission is required but the user does not have it
 				if options.ListOthersPermission != nil {
 					if !tmpUser.CheckPermission(*options.ListOthersPermission) {
-						limitToUser = &tmpUser
+						limitToUser = tmpUser
 					}
 				}
 			}
 
-			// GetDB
-			db := r.Context().Value(dbContextKey).(*mongo.Client)
-			service := options.ModelService.CopyAndInit(db, options.Database)
-
 			// Load
-			objsFromDb, err := service.List(&tmpUser, limitToUser != nil, r.Context())
+			objsFromDb, err := options.ModelService.List(limitToUser != nil, r.Context())
 			if err != nil {
 				uhttp.RenderError(w, r, err)
 				return
