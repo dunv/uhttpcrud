@@ -13,5 +13,5 @@ type WithID interface {
 }
 
 func getWithIDFromPostModel(r *http.Request) WithID {
-	return uhttp.ParsedModel(r).(WithID)
+	return r.Context().Value(uhttp.CtxKeyPostModel).(WithID)
 }

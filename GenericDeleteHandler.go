@@ -16,16 +16,16 @@ func genericDeleteHandler(options CrudOptions) uhttp.Handler {
 	}
 	requiredGet[options.IDParameterName] = uhttp.STRING
 
-	return uhttp.Handler{
-		PreProcess:    options.DeletePreprocess,
-		AddMiddleware: uauth.AuthJWT(), // We need a user in order to delete an object
-		RequiredGet:   requiredGet,
-		OptionalGet:   options.DeleteOptionalGet,
-		DeleteHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return uhttp.NewHandler(
+		uhttp.WithPreProcess(options.DeletePreprocess),
+		uhttp.WithMiddlewares([]uhttp.Middleware{uauth.AuthJWT()}), // We need a user in order to delete an object
+		uhttp.WithRequiredGet(requiredGet),
+		uhttp.WithOptionalGet(options.DeleteOptionalGet),
+		uhttp.WithDelete(func(r *http.Request, ret *int) interface{} {
 			// Sanity check: DeleteOthersPermission can only be set if DeletePermission is set
 			if options.DeletePermission == nil && options.DeleteOthersPermission != nil {
-				uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: DeleteOthersPermission can only be set if DeletePermission is set.")
-				return
+				*ret = http.StatusInternalServerError
+				return map[string]string{"err": "Configuration problem: DeleteOthersPermission can only be set if DeletePermission is set."}
 			}
 
 			// Check permissions
@@ -36,13 +36,11 @@ func genericDeleteHandler(options CrudOptions) uhttp.Handler {
 				// Return nothing, if deletePermission is required but the user does not have it
 				user, err = uauth.UserFromRequest(r)
 				if err != nil {
-					uhttp.RenderError(w, r, fmt.Errorf("Could not get user (%s)", err))
-					return
+					return fmt.Errorf("Could not get user (%s)", err)
 				}
 
 				if !user.CheckPermission(*options.DeletePermission) {
-					uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.DeletePermission))
-					return
+					return fmt.Errorf("User does not have the required permission: %s", *options.DeletePermission)
 				}
 
 				// Limit results if DeleteOthersPermission is required but the user does not have it
@@ -59,12 +57,11 @@ func genericDeleteHandler(options CrudOptions) uhttp.Handler {
 			// Delete
 			err = options.ModelService.Delete(*objectID, limitToUser != nil, r.Context())
 			if err != nil {
-				uhttp.RenderError(w, r, err)
-				return
+				return err
 			}
 
 			// Answer
-			uhttp.RenderMessageWithStatusCode(w, r, 200, "Deleted successfully")
+			return map[string]string{"msg": "Deleted successfully"}
 		}),
-	}
+	)
 }

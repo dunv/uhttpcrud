@@ -10,21 +10,20 @@ import (
 
 // Returns an instance of an list-handler for the configured options
 func genericListHandler(options CrudOptions) uhttp.Handler {
-	var middleware *uhttp.Middleware
+	var middleware uhttp.Middleware
 	if options.ListPermission != nil {
 		middleware = uauth.AuthJWT()
 	}
-	return uhttp.Handler{
-		PreProcess:    options.ListPreprocess,
-		AddMiddleware: middleware,
-		RequiredGet:   options.ListRequiredGet,
-		OptionalGet:   options.ListOptionalGet,
-		GetHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
+	return uhttp.NewHandler(
+		uhttp.WithPreProcess(options.ListPreprocess),
+		uhttp.WithMiddlewares([]uhttp.Middleware{middleware}),
+		uhttp.WithRequiredGet(options.ListRequiredGet),
+		uhttp.WithOptionalGet(options.ListOptionalGet),
+		uhttp.WithGet(func(r *http.Request, ret *int) interface{} {
 			// Sanity check: ListOthersPermission can only be set if ListPermission is set
 			if options.ListPermission == nil && options.ListOthersPermission != nil {
-				uhttp.RenderMessageWithStatusCode(w, r, 500, "Configuration problem: ListOthersPermission can only be set if ListPermission is set.")
-				return
+				*ret = http.StatusInternalServerError
+				return map[string]string{"err": "Configuration problem: ListOthersPermission can only be set if ListPermission is set."}
 			}
 
 			// Check permissions
@@ -35,13 +34,11 @@ func genericListHandler(options CrudOptions) uhttp.Handler {
 				// Return nothing, if listPermission is required but the user does not have it
 				tmpUser, err = uauth.UserFromRequest(r)
 				if err != nil {
-					uhttp.RenderError(w, r, fmt.Errorf("Could not get user (%s)", err))
-					return
+					return fmt.Errorf("Could not get user (%s)", err)
 				}
 
 				if !tmpUser.CheckPermission(*options.ListPermission) {
-					uhttp.RenderError(w, r, fmt.Errorf("User does not have the required permission: %s", *options.ListPermission))
-					return
+					return fmt.Errorf("User does not have the required permission: %s", *options.ListPermission)
 				}
 
 				// Limit results if ListOthersPermission is required but the user does not have it
@@ -55,12 +52,11 @@ func genericListHandler(options CrudOptions) uhttp.Handler {
 			// Load
 			objsFromDb, err := options.ModelService.List(limitToUser != nil, r.Context())
 			if err != nil {
-				uhttp.RenderError(w, r, err)
-				return
+				return err
 			}
 
 			// Render Response
-			uhttp.Render(w, r, objsFromDb)
+			return objsFromDb
 		}),
-	}
+	)
 }
