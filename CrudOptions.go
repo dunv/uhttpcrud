@@ -12,9 +12,6 @@ type CrudOptions struct {
 	// for getting and deleting documents
 	IDParameterName string
 
-	// Database is the name of the database which contains the documents to be modified (will be passed to all service-calls)
-	Database string
-
 	// ListEndpoint is the http-endpoint-name for list queries
 	// If == nil there will be no list-enpoint
 	ListEndpoint         *string
