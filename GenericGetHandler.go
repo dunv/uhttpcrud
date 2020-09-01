@@ -10,9 +10,9 @@ import (
 
 // Returns an instance of an get-handler for the configured options
 func genericGetHandler(options CrudOptions) uhttp.Handler {
-	var middleware uhttp.Middleware
-	if options.GetPermission != nil {
-		middleware = uauth.AuthJWT()
+	var middlewares []uhttp.Middleware
+	if options.ListPermission != nil {
+		middlewares = []uhttp.Middleware{uauth.AuthJWT()}
 	}
 
 	requiredGet := options.GetRequiredGet
@@ -23,7 +23,7 @@ func genericGetHandler(options CrudOptions) uhttp.Handler {
 
 	return uhttp.NewHandler(
 		uhttp.WithPreProcess(options.GetPreprocess),
-		uhttp.WithMiddlewares([]uhttp.Middleware{middleware}),
+		uhttp.WithMiddlewares(middlewares),
 		uhttp.WithRequiredGet(requiredGet),
 		uhttp.WithOptionalGet(options.GetOptionalGet),
 		uhttp.WithGet(func(r *http.Request, ret *int) interface{} {

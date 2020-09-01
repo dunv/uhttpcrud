@@ -10,13 +10,13 @@ import (
 
 // Returns an instance of an list-handler for the configured options
 func genericListHandler(options CrudOptions) uhttp.Handler {
-	var middleware uhttp.Middleware
+	var middlewares []uhttp.Middleware
 	if options.ListPermission != nil {
-		middleware = uauth.AuthJWT()
+		middlewares = []uhttp.Middleware{uauth.AuthJWT()}
 	}
 	return uhttp.NewHandler(
 		uhttp.WithPreProcess(options.ListPreprocess),
-		uhttp.WithMiddlewares([]uhttp.Middleware{middleware}),
+		uhttp.WithMiddlewares(middlewares),
 		uhttp.WithRequiredGet(options.ListRequiredGet),
 		uhttp.WithOptionalGet(options.ListOptionalGet),
 		uhttp.WithGet(func(r *http.Request, ret *int) interface{} {
