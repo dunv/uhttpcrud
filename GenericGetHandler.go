@@ -11,7 +11,7 @@ import (
 // Returns an instance of an get-handler for the configured options
 func genericGetHandler(options CrudOptions) uhttp.Handler {
 	var middlewares []uhttp.Middleware
-	if options.ListPermission != nil {
+	if options.GetPermission != nil {
 		middlewares = []uhttp.Middleware{uauth.AuthJWT()}
 	}
 
