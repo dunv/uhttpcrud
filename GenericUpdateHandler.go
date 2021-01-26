@@ -13,7 +13,7 @@ func genericUpdateHandler(options CrudOptions) uhttp.Handler {
 		uhttp.WithPreProcess(options.UpdatePreprocess),
 		uhttp.WithRequiredGet(options.UpdateRequiredGet),
 		uhttp.WithOptionalGet(options.UpdateOptionalGet),
-		uhttp.WithMiddlewares([]uhttp.Middleware{uauth.AuthJWT()}),
+		uhttp.WithMiddlewares(uauth.AuthJWT()),
 		uhttp.WithPostModel(options.Model, func(r *http.Request, model interface{}, ret *int) interface{} {
 
 			// Sanity check: UpdateOthersPermission can only be set if UpdatePermission is set

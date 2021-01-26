@@ -23,7 +23,7 @@ func genericGetHandler(options CrudOptions) uhttp.Handler {
 
 	return uhttp.NewHandler(
 		uhttp.WithPreProcess(options.GetPreprocess),
-		uhttp.WithMiddlewares(middlewares),
+		uhttp.WithMiddlewares(middlewares...),
 		uhttp.WithRequiredGet(requiredGet),
 		uhttp.WithOptionalGet(options.GetOptionalGet),
 		uhttp.WithGet(func(r *http.Request, ret *int) interface{} {

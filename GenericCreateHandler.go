@@ -14,7 +14,7 @@ func genericCreateHandler(options CrudOptions) uhttp.Handler {
 		uhttp.WithPreProcess(options.CreatePreprocess),
 		uhttp.WithRequiredGet(options.CreateRequiredGet),
 		uhttp.WithOptionalGet(options.CreateOptionalGet),
-		uhttp.WithMiddlewares([]uhttp.Middleware{uauth.AuthJWT()}),
+		uhttp.WithMiddlewares(uauth.AuthJWT()),
 		uhttp.WithPostModel(options.Model, func(r *http.Request, model interface{}, ret *int) interface{} {
 			// Sanity check: CreateOthersPermission can only be set if CreatePermission is set
 			if options.CreatePermission == nil && options.CreateOthersPermission != nil {

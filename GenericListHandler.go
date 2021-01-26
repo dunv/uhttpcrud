@@ -16,7 +16,7 @@ func genericListHandler(options CrudOptions) uhttp.Handler {
 	}
 	return uhttp.NewHandler(
 		uhttp.WithPreProcess(options.ListPreprocess),
-		uhttp.WithMiddlewares(middlewares),
+		uhttp.WithMiddlewares(middlewares...),
 		uhttp.WithRequiredGet(options.ListRequiredGet),
 		uhttp.WithOptionalGet(options.ListOptionalGet),
 		uhttp.WithGet(func(r *http.Request, ret *int) interface{} {

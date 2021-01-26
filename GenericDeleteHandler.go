@@ -18,7 +18,7 @@ func genericDeleteHandler(options CrudOptions) uhttp.Handler {
 
 	return uhttp.NewHandler(
 		uhttp.WithPreProcess(options.DeletePreprocess),
-		uhttp.WithMiddlewares([]uhttp.Middleware{uauth.AuthJWT()}), // We need a user in order to delete an object
+		uhttp.WithMiddlewares(uauth.AuthJWT()), // We need a user in order to delete an object
 		uhttp.WithRequiredGet(requiredGet),
 		uhttp.WithOptionalGet(options.DeleteOptionalGet),
 		uhttp.WithDelete(func(r *http.Request, ret *int) interface{} {
