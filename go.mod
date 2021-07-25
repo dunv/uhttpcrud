@@ -4,10 +4,10 @@ go 1.13
 
 require (
 	github.com/aws/aws-sdk-go v1.40.7 // indirect
-	github.com/dunv/uauth v1.0.72
+	github.com/dunv/uauth v1.0.73
 	github.com/dunv/uhttp v1.0.75
 	github.com/dunv/ulog v1.0.24 // indirect
-	github.com/dunv/umongo v1.0.20 // indirect
+	github.com/dunv/umongo v1.0.21 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/klauspost/compress v1.13.1 // indirect

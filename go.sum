@@ -130,6 +130,8 @@ github.com/dunv/uauth v1.0.64 h1:e5CLWRy1jxtKlirtJ6vNmsvcB0W9/ao5wqiC5KKZt74=
 github.com/dunv/uauth v1.0.64/go.mod h1:9vRAPnPK+M7Svg2zwOr872FHhl/qxeHduGZeAe5dAQ8=
 github.com/dunv/uauth v1.0.72 h1:VFSAs9Jxn6DgCPFM9GIjT/a6iR9cRDpQXk8Yd/IMP2A=
 github.com/dunv/uauth v1.0.72/go.mod h1:1RwfkxjRH4QtSQpxF8DIrsWrE95N4+Srnw/pXy+JFkw=
+github.com/dunv/uauth v1.0.73 h1:hvtjAerlSuDDn20DvsBIgnkG0NSxnk8UJ4NB+XNOtlw=
+github.com/dunv/uauth v1.0.73/go.mod h1:E5dbQD3Tqn7+moQgFfklqM03pDFRGSZbWqYXszLeB+Q=
 github.com/dunv/uhelpers v1.0.4 h1:EdxjjhT0n9CfpqQuA4V0A+GAxmFhbtNg9CB8EsHoCH8=
 github.com/dunv/uhelpers v1.0.4/go.mod h1:e01Y+aVv/p2Te+5P5pZb6GiaOBce9jxDXE7bpJaBez4=
 github.com/dunv/uhelpers v1.0.11 h1:oaiayyaotrgSmhvUm0tFv+IyIhgTM7g211rx1Tv3hcM=
@@ -220,6 +222,8 @@ github.com/dunv/umongo v1.0.17/go.mod h1:H0dfsleEEqnSExXpuyGZBXBvd96iqgaZI52BS/p
 github.com/dunv/umongo v1.0.19/go.mod h1:At+VJRMZCO/rU72PjLzlT6lSzZcm1zwM0Px56Dq5ORk=
 github.com/dunv/umongo v1.0.20 h1:8Jeen22D0fpe9iRqVhQxg2O+Xir6PsIbfAAJtbJZ/Fs=
 github.com/dunv/umongo v1.0.20/go.mod h1:y6QDxSF6298HM7/iwSkQl/NxffTK0KuVaON4ECjb34g=
+github.com/dunv/umongo v1.0.21 h1:6iMbooGBDINjR2JJylXkcO+/ZnrVkP8f8jgRfu4sgRU=
+github.com/dunv/umongo v1.0.21/go.mod h1:xNpU9waXJnZtZEEpQ2g2abymI4BRxt59zHKDKCPz/2c=
 github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5mFgVsvEsIPBvNs=
 github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21/go.mod h1:+020luEh2TKB4/GOp8oxxtq0Daoen/Cii55CzbTV6DU=
