@@ -69,7 +69,7 @@ type CrudOptions struct {
 func (o CrudOptions) CreateEndpoints(u *uhttp.UHTTP) error {
 	if o.GetEndpoint != nil {
 		if o.ModelService == nil || o.IDParameterName == "" {
-			return errors.New("crudOptions.ModelService and crudOptions.IDParameterName is required when using GetEndpoint")
+			return errors.New("crudOptions.ModelService and crudOptions.IDParameterName are required when using GetEndpoint")
 		}
 		u.Handle(*o.GetEndpoint, genericGetHandler(o))
 	}
