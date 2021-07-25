@@ -2,6 +2,7 @@ package uhttpcrud
 
 import (
 	"context"
+	"errors"
 
 	"github.com/dunv/uauth"
 	"github.com/dunv/uhttp"
@@ -65,20 +66,36 @@ type CrudOptions struct {
 }
 
 // CreateEndpoints adds all handlers configured in CrudOptions using the uhttp-framework
-func (o CrudOptions) CreateEndpoints(u *uhttp.UHTTP) {
+func (o CrudOptions) CreateEndpoints(u *uhttp.UHTTP) error {
 	if o.GetEndpoint != nil {
+		if o.ModelService == nil || o.IDParameterName == "" {
+			return errors.New("crudOptions.ModelService and crudOptions.IDParameterName is required when using GetEndpoint")
+		}
 		u.Handle(*o.GetEndpoint, genericGetHandler(o))
 	}
 	if o.ListEndpoint != nil {
+		if o.ModelService == nil {
+			return errors.New("crudOptions.ModelService is required when using ListEndpoint")
+		}
 		u.Handle(*o.ListEndpoint, genericListHandler(o))
 	}
 	if o.CreateEndpoint != nil {
+		if o.ModelService == nil || o.Model == nil {
+			return errors.New("crudOptions.ModelService and crudOptions.Model are required when using CreateEndpoint")
+		}
 		u.Handle(*o.CreateEndpoint, genericCreateHandler(o))
 	}
 	if o.UpdateEndpoint != nil {
+		if o.ModelService == nil || o.Model == nil {
+			return errors.New("crudOptions.ModelService, crudOptions.Model are required when using UpdateEndpoint")
+		}
 		u.Handle(*o.UpdateEndpoint, genericUpdateHandler(o))
 	}
 	if o.DeleteEndpoint != nil {
+		if o.ModelService == nil || o.IDParameterName == "" {
+			return errors.New("crudOptions.ModelService, crudOptions.IDParameterName are required when using DeleteEndpoint")
+		}
 		u.Handle(*o.DeleteEndpoint, genericDeleteHandler(o))
 	}
+	return nil
 }

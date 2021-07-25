@@ -48,7 +48,7 @@ func genericUpdateHandler(options CrudOptions) uhttp.Handler {
 			modelInterface := getWithIDFromPostModel(r)
 
 			// Check if all required populated fields are populated (indexes)
-			idFromModel, err := modelInterface.(WithID).GetID()
+			idFromModel, err := modelInterface.GetID()
 			if err != nil {
 				return fmt.Errorf("could not getID (%s)", err)
 			}
