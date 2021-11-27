@@ -1,4 +1,4 @@
-module github.com/dunv/uhttpcrud
+module github.com/dunv/uhttpcrud/v2
 
 go 1.17
 
